@@ -66,7 +66,7 @@ const checkAnswer = (e) => {
         reinitializeTable()
         return initializeGame()
     }
-    if(cptScore === 20){
+    if(cptScore === 100){
         window.alert(`Bravo ! <3`)
         cptScore = 0
         reinitializeTable()
