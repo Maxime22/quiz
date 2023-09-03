@@ -10,9 +10,9 @@
 </head>
 
 <body class="bodyspanish">
-    <h1>Quiz Espagnol</h1>
+    <h1>💃 Quiz Espagnol 💃</h1>
     <div class="wrapper">
-        <p>Choisissez la traduction correcte :</p>
+        <p class="choose">Choisissez la traduction correcte :</p>
         <div id="wordToGuess"></div>
         <div class="responses">
             <div class="response"></div>
@@ -24,7 +24,14 @@
             Bonnes réponses à la suite : <span id="score">0</span>
         </div>
     </div>
-    <div><a href="./index.html">Japanese Version</a></div>
+    <div class="changeversion"><a href="./index.html">Japanese Version</a></div>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="closeModal">❌</span>
+            <p id="modalText1"></p>
+            <p id="modalText2"></p>
+        </div>
+    </div>
     <script src="./spanishwords.js"></script>
     <script src="./app.js"></script>
 </body>

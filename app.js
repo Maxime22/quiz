@@ -6,6 +6,14 @@ let blockAnswer = document.getElementById('wordToGuess')
 let score = document.getElementById('score')
 let responses = [...document.getElementsByClassName('response')]
 
+// Récupérez la modale
+let modal = document.getElementById("myModal");
+modal.style.display = "none";
+// Récupérez l'élément <span> qui permet de fermer la modale
+let closeModal = document.getElementsByClassName("closeModal")[0];
+let modalText1 = document.getElementById('modalText1')
+let modalText2 = document.getElementById('modalText2')
+
 let cptScore = 0
 
 let answerObject = {}
@@ -61,13 +69,19 @@ const initializeGame = () => {
 const checkAnswer = (e) => {
     let valueClicked = e.target.textContent
     if (valueClicked != answer[1]) {
-        window.alert(`Vous avez perdu, la réponse était ${answer[1]}`)
+        modal.style.display = "block";
+        modalText1.textContent = "Vous avez perdu 😿";
+        modalText2.innerHTML = `La réponse était <strong>${answer[1]}</strong>`;
+        
         cptScore = 0
         reinitializeTable()
         return initializeGame()
     }
     if(cptScore === 100){
-        window.alert(`Bravo ! <3`)
+        //window.alert(`Bravo ! <3`)
+        modal.style.display = "block";
+        modalText1.textContent = `❤️❤️ Bravo ! ❤️❤️`;
+        modalText2.textContent = "";
         cptScore = 0
         reinitializeTable()
         return initializeGame()
@@ -75,6 +89,18 @@ const checkAnswer = (e) => {
     cptScore++
     initializeGame()
 }
+
+closeModal.onclick = function() {
+    modal.style.display = "none";
+}
+
+// Lorsque l'utilisateur clique en dehors de la modale, fermez-la également
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
 
 responses.forEach(rep => {
     rep.addEventListener("click", checkAnswer)
