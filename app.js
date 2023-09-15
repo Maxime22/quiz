@@ -77,7 +77,7 @@ const checkAnswer = (e) => {
         reinitializeTable()
         return initializeGame()
     }
-    if(cptScore === 100){
+    if(cptScore === 60){
         //window.alert(`Bravo ! <3`)
         modal.style.display = "block";
         modalText1.textContent = `❤️❤️ Bravo ! ❤️❤️`;
