@@ -1,40 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./style.css">
-    </link>
-    <title>Quiz Japonais</title>
+    <title>Quiz Selection</title>
 </head>
-
-<body>
-    <h1>🍣 Quiz Japonais 🍣</h1>
-    <div class="wrapper">
-        <p class="choose">Choisissez la traduction correcte :</p>
-        <div id="wordToGuess"></div>
-        <div class="responses">
-            <div class="response"></div>
-            <div class="response"></div>
-            <div class="response"></div>
-            <div class="response"></div>
-        </div>
-        <div class="score">
-            Bonnes réponses à la suite : <span id="score">0</span>
-        </div>
+<body class="index-body">
+    <h1>Choisis ton quiz !</h1>
+    <div class="index-button-container">
+        <a href="./japanese/frenchtojapanese.html" class="index-quiz-button">🍣 Japonais 🍣</a>
+        <a href="./spanish/spanish.html" class="index-quiz-button">💃 Espagnol 💃</a>
     </div>
-    <div class="changeversion"><a href="./hiragana.html">Hiragana Test</a></div>
-    <div class="changeversion"><a href="./spanish.html">Spanish version</a></div>
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="closeModal">❌</span>
-            <p id="modalText1"></p>
-            <p id="modalText2"></p>
-        </div>
-    </div>    
-    <script src="./japanesewords.js"></script>
-    <script src="./app.js"></script>
 </body>
-
 </html>

@@ -1,3 +1,3 @@
-# quizlanguage
+# quiz
 
-Hello World !
+Find different quizzes! Enjoy!
