@@ -87,6 +87,10 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
     font-weight: bold;
 }
 
+#myModal{
+    display: none;
+}
+
 .modal {
     position: fixed;
     top: 0;
