@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style.css">
+    <title>Choix de la leçon de Japonais</title>
+</head>
+
+<body class="bodyLessons">
+    <div id="quizContainer">
+        <h1>Leçon Quiz</h1>
+        <p class="lessonText">Sélectionnez une leçon :</p>
+        <select id="lessonSelect" onchange="chooseLesson()">
+        </select>
+
+        <div id="quizArea" style="display:none;">
+            <p class="lessonText">Traduisez le mot suivant : <strong><span id="currentWord"></span></strong></p>
+            <input type="text" id="userLessonInput" placeholder="Entrez la traduction..." onkeyup="handleKeyUp(event)">
+            <span id="feedbackEmoji"></span>
+        </div>
+        <audio id="correctSound" src="../bonne-reponse.mp3" preload="auto"></audio>
+        <audio id="wrongSound" src="../buzzer-or-wrong-answer-20582.mp3" preload="auto"></audio>
+    </div>
+    <script src="./japaneseLesson.js"></script>
+    <script src="../quizInput.js"></script>
+</body>
+
+</html>

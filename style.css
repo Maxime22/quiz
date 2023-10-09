@@ -205,6 +205,42 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
     font-size: 22px;
 }
 
+.bodyLessons {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#quizContainer {
+    background-color: #ffffff;
+    padding: 100px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+#feedbackEmoji {
+    font-size: 24px;
+    margin-left: 10px;
+}
+
+#lessonSelect, #userLessonInput {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.lessonText{
+    margin-top: 20px;
+}
+
 @media (max-width: 768px) {
 
     #wordToGuess {
