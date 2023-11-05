@@ -120,7 +120,7 @@ const wordsTradsAndLessons = [
     { "word": "être venu", "trad": "kimashita", "lesson": "8" },
     { "word": "venir", "trad": "kuru", "lesson": "8" },
     { "word": "être allé", "trad": "ikimashita", "lesson": "8" },
-    { "word": "quoi (devant "no")", "trad": "nan", "lesson": "8" },
+    { "word": "quoi (devant 'no')", "trad": "nan", "lesson": "8" },
     { "word": "Amérique", "trad": "amerika", "lesson": "8" },
     { "word": "était-intéressant", "trad": "omoshirokatta", "lesson": "8" },
     { "word": "lunettes", "trad": "megane", "lesson": "8" },
