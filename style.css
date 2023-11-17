@@ -241,6 +241,19 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
     margin-top: 20px;
 }
 
+.lessonQuizButton {
+    background-color: #0b579e;
+    color: white;
+    padding: 10px 10px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+
 @media (max-width: 768px) {
 
     #wordToGuess {

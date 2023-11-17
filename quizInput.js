@@ -1,12 +1,10 @@
-let newTable = [...wordsTradsAndLessons]
-
-const lessons = {};
+let lessons = [...wordsTradsAndLessons]
 
 let currentWordIndex;
 let currentLesson;
 
 function populateLessonDropdown() {
-    const lessonSet = new Set(newTable.map(wordObj => wordObj.lesson));
+    const lessonSet = new Set(lessons.map(wordObj => wordObj.lesson));
 
     const selectElement = document.getElementById('lessonSelect');
     lessonSet.forEach(lesson => {
@@ -59,7 +57,7 @@ function checkAnswer() {
     const userTranslation = document.getElementById('userLessonInput').value;
     const feedbackEmojiElement = document.getElementById('feedbackEmoji');
 
-    if (userTranslation === wordsTradsAndLessons[currentWordIndex].trad) {
+    if (userTranslation.toLowerCase().trim() === (wordsTradsAndLessons[currentWordIndex].trad).toLowerCase().trim()) {
         feedbackEmojiElement.textContent = "✅"; // Émoji de validation verte
         playSound("correctSound");
         wordsTradsAndLessons.splice(currentWordIndex, 1);  // Supprimez le mot du tableau
@@ -70,6 +68,12 @@ function checkAnswer() {
     }
     document.getElementById('userLessonInput').value = ""; // Réinitialisez l'input
 }
+
+const changeWordButton = document.getElementById("changeWord");
+changeWordButton.addEventListener("click", (event) => {
+    alert("La réponse était " + wordsTradsAndLessons[currentWordIndex].trad);
+    displayNextWord();
+});
 
 populateLessonDropdown();
 
