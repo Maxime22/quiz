@@ -1,7 +1,9 @@
 let lessons = [...wordsTradsAndLessons]
+let wordsForCurrentLesson = [];
 
 let currentWordIndex;
 let currentLesson;
+let lastWordDisplayed = null;
 
 function populateLessonDropdown() {
     const lessonSet = new Set(lessons.map(wordObj => wordObj.lesson));
@@ -17,6 +19,7 @@ function populateLessonDropdown() {
 
 function chooseLesson() {
     currentLesson = parseInt(document.getElementById('lessonSelect').value);
+    wordsForCurrentLesson = lessons.filter(word => parseInt(word.lesson) === currentLesson);
     document.getElementById('quizArea').style.display = "block";
     displayNextWord();
 }
@@ -25,25 +28,34 @@ function displayNextWord() {
     const wordObj = getRandomWord();
     if (!wordObj) return;
     document.getElementById('currentWord').textContent = wordObj.word;
-    currentWordIndex = wordsTradsAndLessons.indexOf(wordObj);
+    lastWordDisplayed = wordObj;
+    currentWordIndex = wordsForCurrentLesson.indexOf(wordObj);
 }
 
 function getRandomWord() {
-    const wordsFromCurrentLesson = wordsTradsAndLessons.filter(word => parseInt(word.lesson) === currentLesson);
-    if (wordsFromCurrentLesson.length === 0) {
+    if (wordsForCurrentLesson.length === 0) {
         alert("Félicitations ! Vous avez terminé la leçon " + currentLesson);
         document.getElementById('quizArea').style.display = "none";
-        chooseLesson()
+        chooseLesson(currentLesson);
         registerBadge('Lesson ' + currentLesson);
         return;
     }
 
-    const randomIndex = Math.floor(Math.random() * wordsFromCurrentLesson.length);
-    return wordsFromCurrentLesson[randomIndex];
+    if (wordsForCurrentLesson.length === 1) {
+        return wordsForCurrentLesson[0];
+    }
+
+    let wordObj;
+    do {
+        const randomIndex = Math.floor(Math.random() * wordsForCurrentLesson.length);
+        wordObj = wordsForCurrentLesson[randomIndex];
+    } while (wordObj === lastWordDisplayed);
+
+    return wordObj;
 }
 
 function handleKeyUp(event) {
-    // Si la touche pressée est "Enter"
+    // "Enter"
     if (event.keyCode === 13) {
         checkAnswer();
     }
@@ -59,10 +71,10 @@ function checkAnswer() {
     const userTranslation = document.getElementById('userLessonInput').value;
     const feedbackEmojiElement = document.getElementById('feedbackEmoji');
 
-    if (userTranslation.toLowerCase().trim() === (wordsTradsAndLessons[currentWordIndex].trad).toLowerCase().trim()) {
+    if (userTranslation.toLowerCase().trim() === (wordsForCurrentLesson[currentWordIndex].trad).toLowerCase().trim()) {
         feedbackEmojiElement.textContent = "✅"; // Émoji de validation verte
         playSound("correctSound");
-        wordsTradsAndLessons.splice(currentWordIndex, 1);  // Supprimez le mot du tableau
+        wordsForCurrentLesson.splice(currentWordIndex, 1);  // Supprimez le mot du tableau
         displayNextWord();
     } else {
         feedbackEmojiElement.textContent = "❌"; // Émoji de croix rouge
@@ -73,10 +85,9 @@ function checkAnswer() {
 
 const changeWordButton = document.getElementById("changeWord");
 changeWordButton.addEventListener("click", (event) => {
-    alert("La réponse était " + wordsTradsAndLessons[currentWordIndex].trad);
+    alert("La réponse était " + wordsForCurrentLesson[currentWordIndex].trad);
     displayNextWord();
 });
 
 populateLessonDropdown();
-
 chooseLesson(1);
