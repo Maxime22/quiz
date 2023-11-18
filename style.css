@@ -255,7 +255,40 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
 }
 
 .badgeTitle{
-    margin: 40px 0 10px 0;
+}
+
+.badgeTitle {
+    color: darkgreen;
+    text-align: center;
+    margin: 40px 0 20px 0;
+}
+
+.badgeItem {
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badgeContainer {
+    display: flex;
+    align-items: center;
+}
+
+.badgeName {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.badgeCount {
+    background-color: #4A90E2;
+    color: white;
+    padding: 3px 6px;
+    border-radius: 50%;
+    font-size: 0.8em;
 }
 
 @media (max-width: 768px) {

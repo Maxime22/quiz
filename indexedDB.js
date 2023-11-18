@@ -53,7 +53,24 @@ function displayBadges() {
 
         badges.forEach(badge => {
             let listItem = document.createElement('li');
-            listItem.textContent = `${badge.badgeName} (x${badge.numberOfThisBadge})`;
+            listItem.className = 'badgeItem'; // Ajouter une classe pour le styliser en CSS
+
+            // Structure du badge
+            let badgeContainer = document.createElement('div');
+            badgeContainer.className = 'badgeContainer';
+
+            let badgeName = document.createElement('span');
+            badgeName.className = 'badgeName';
+            badgeName.textContent = badge.badgeName;
+
+            let badgeCount = document.createElement('span');
+            badgeCount.className = 'badgeCount';
+            badgeCount.textContent = `x${badge.numberOfThisBadge}`;
+
+            // Assemblage du badge
+            badgeContainer.appendChild(badgeName);
+            badgeContainer.appendChild(badgeCount);
+            listItem.appendChild(badgeContainer);
             badgeListElement.appendChild(listItem);
         });
     };
