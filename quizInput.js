@@ -33,6 +33,8 @@ function getRandomWord() {
     if (wordsFromCurrentLesson.length === 0) {
         alert("Félicitations ! Vous avez terminé la leçon " + currentLesson);
         document.getElementById('quizArea').style.display = "none";
+        chooseLesson()
+        registerBadge('Lesson ' + currentLesson);
         return;
     }
 

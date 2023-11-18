@@ -254,6 +254,10 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
     margin-top: 10px;
 }
 
+.badgeTitle{
+    margin: 40px 0 10px 0;
+}
+
 @media (max-width: 768px) {
 
     #wordToGuess {
