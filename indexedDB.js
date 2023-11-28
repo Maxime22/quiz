@@ -13,12 +13,16 @@ window.onload = function () {
 
     request.onupgradeneeded = function (event) {
         database = event.target.result;
-        console.log("coucou")
         let badgeStore = database.createObjectStore("badges", {keyPath: "badgeName"});
         badgeStore.createIndex("badgeName", "badgeName", { unique: true });
     };
 
 }
+
+function registerScore(scoreInPercentage){
+
+}
+
 function registerBadge(badgeName) {
     let transaction = database.transaction(["badges"], "readwrite");
     let badgeStore = transaction.objectStore("badges");
@@ -48,6 +52,14 @@ function displayBadges() {
 
     getAllBadges.onsuccess = function (e) {
         let badges = e.target.result;
+
+        // Tri des badges par numéro de leçon
+        badges.sort((a, b) => {
+            let numberA = parseInt(a.badgeName.match(/\d+/)[0]);
+            let numberB = parseInt(b.badgeName.match(/\d+/)[0]);
+            return numberA - numberB;
+        });
+
         let badgeListElement = document.getElementById('badgeListItems');
         badgeListElement.innerHTML = '';
 

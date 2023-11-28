@@ -4,6 +4,8 @@ let wordsForCurrentLesson = [];
 let currentWordIndex;
 let currentLesson;
 let lastWordDisplayed = null;
+let unknownWords = [];
+let totalCountOfWordsForCurrentLesson;
 
 function populateLessonDropdown() {
     const lessonSet = new Set(lessons.map(wordObj => wordObj.lesson));
@@ -17,9 +19,15 @@ function populateLessonDropdown() {
     });
 }
 
-function chooseLesson() {
-    currentLesson = parseInt(document.getElementById('lessonSelect').value);
+function chooseLesson(lesson = null) {
+    const selectElement = document.getElementById('lessonSelect');
+    currentLesson = parseInt(selectElement.value);
+    if (lesson) {
+        currentLesson = lesson;
+    }
+    selectElement.value = currentLesson;
     wordsForCurrentLesson = lessons.filter(word => parseInt(word.lesson) === currentLesson);
+    totalCountOfWordsForCurrentLesson = wordsForCurrentLesson.length;
     document.getElementById('quizArea').style.display = "block";
     displayNextWord();
 }
@@ -34,10 +42,8 @@ function displayNextWord() {
 
 function getRandomWord() {
     if (wordsForCurrentLesson.length === 0) {
-        alert("Félicitations ! Vous avez terminé la leçon " + currentLesson);
-        document.getElementById('quizArea').style.display = "none";
-        chooseLesson(currentLesson);
-        registerBadge('Lesson ' + currentLesson);
+        congratsUser();
+        updateToNextLesson();
         return;
     }
 
@@ -54,6 +60,24 @@ function getRandomWord() {
     return wordObj;
 }
 
+function congratsUser() {
+    playSound("lessonCompletedSound");
+    alert("Félicitations ! Vous avez terminé la leçon " + currentLesson);
+}
+
+function updateToNextLesson() {
+    let scoreInPercentage = calculateScoreInPercentage();
+    document.getElementById('quizArea').style.display = "none";
+    registerBadge('Lesson ' + currentLesson);
+    registerScore(scoreInPercentage);
+    unknownWords = [];
+    chooseLesson(currentLesson + 1);
+}
+
+function calculateScoreInPercentage() {
+    return ((totalCountOfWordsForCurrentLesson - unknownWords.length) / totalCountOfWordsForCurrentLesson)*100;
+}
+
 function handleKeyUp(event) {
     // "Enter"
     if (event.keyCode === 13) {
@@ -68,12 +92,16 @@ function playSound(id) {
 }
 
 function checkAnswer() {
-    const userTranslation = document.getElementById('userLessonInput').value;
+    const userTranslation = (document.getElementById('userLessonInput').value).toLowerCase().trim();
+    const currentCorrectTranslation = (wordsForCurrentLesson[currentWordIndex].trad).toLowerCase().trim();
     const feedbackEmojiElement = document.getElementById('feedbackEmoji');
 
-    if (userTranslation.toLowerCase().trim() === (wordsForCurrentLesson[currentWordIndex].trad).toLowerCase().trim()) {
+    // accents or not are equivalent in the condition
+    if (userTranslation.localeCompare(currentCorrectTranslation, undefined, {sensitivity: 'base'}) === 0) {
         feedbackEmojiElement.textContent = "✅"; // Émoji de validation verte
-        playSound("correctSound");
+        if (wordsForCurrentLesson.length !== 1) {
+            playSound("correctSound");
+        }
         wordsForCurrentLesson.splice(currentWordIndex, 1);  // Supprimez le mot du tableau
         displayNextWord();
     } else {
@@ -85,6 +113,8 @@ function checkAnswer() {
 
 const changeWordButton = document.getElementById("changeWord");
 changeWordButton.addEventListener("click", (event) => {
+    const unknownWord = wordsForCurrentLesson[currentWordIndex].trad
+    unknownWords.push(unknownWord)
     alert("La réponse était " + wordsForCurrentLesson[currentWordIndex].trad);
     displayNextWord();
 });
