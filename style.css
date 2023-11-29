@@ -221,11 +221,9 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
 .bodyLessons {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
-    height: 100vh;
     margin: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 #quizContainer {

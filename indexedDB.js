@@ -22,7 +22,9 @@ window.onload = function () {
         console.log("Version actuelle de la base de données:", database.version);
 
         // FOR DEV PURPOSE
-        // registerBadge("Lesson 1");
+        for (let i = 1; i < 22; i++) {
+            registerBadge("Lesson_" + i);
+        }
 
         displayStatistics();
     };
@@ -121,7 +123,6 @@ function registerBadge(badgeName) {
 }
 
 function displayStatistics() {
-
     let transaction = database.transaction(["lessons"], "readonly");
     let lessonStore = transaction.objectStore("lessons");
     let getAllLessons = lessonStore.getAll();
@@ -188,6 +189,9 @@ function createBadgeWithScoreForDisplay(badge, badgeListElement, lessonsMap) {
     badgeCount.textContent = `x${badge.numberOfThisBadge}`;
 
     let lessonScore = lessonsMap.get(parseInt(badge.badgeName.match(/\d+/)[0]));
+    if (!lessonScore){
+        lessonScore = "??";
+    }
     let starElement = createStarElement(lessonScore);
 
     let lessonScoreDisplayed = document.createElement('span');
