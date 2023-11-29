@@ -207,7 +207,8 @@ function createStarElement(score) {
     let starContainer = document.createElement('div');
     starContainer.className = 'lessonScoreStarContainer';
 
-    let starCount = Math.floor(score / 20);
+    let starCount = calculateStars(score);
+
 
     for (let i = 0; i < starCount; i++) {
         let star = document.createElement('span');
@@ -217,4 +218,12 @@ function createStarElement(score) {
     }
 
     return starContainer;
+}
+
+function calculateStars(score) {
+    if (score === 100) return 5;
+    if (score >= 75) return 4;
+    if (score >= 50) return 3;
+    if (score >= 25) return 2;
+    return 1;
 }
