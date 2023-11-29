@@ -68,14 +68,14 @@ function congratsUser() {
 function updateToNextLesson() {
     let scoreInPercentage = calculateScoreInPercentage();
     document.getElementById('quizArea').style.display = "none";
-    registerBadge('Lesson ' + currentLesson);
-    registerScore(scoreInPercentage);
+    registerBadge('Lesson_' + currentLesson);
+    registerScore(scoreInPercentage, currentLesson);
     unknownWords = [];
     chooseLesson(currentLesson + 1);
 }
 
 function calculateScoreInPercentage() {
-    return ((totalCountOfWordsForCurrentLesson - unknownWords.length) / totalCountOfWordsForCurrentLesson)*100;
+    return Math.round(((totalCountOfWordsForCurrentLesson - unknownWords.length) / totalCountOfWordsForCurrentLesson)*100);
 }
 
 function handleKeyUp(event) {
