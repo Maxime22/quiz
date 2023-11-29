@@ -4,7 +4,7 @@ let wordsForCurrentLesson = [];
 let currentWordIndex;
 let currentLesson;
 let lastWordDisplayed = null;
-let unknownWords = [];
+let unknownWordsForCurrentLesson = [];
 let totalCountOfWordsForCurrentLesson;
 
 // Récupérez la modale
@@ -36,6 +36,7 @@ function chooseLesson(lesson = null) {
     selectElement.value = currentLesson;
     wordsForCurrentLesson = lessons.filter(word => parseInt(word.lesson) === currentLesson);
     totalCountOfWordsForCurrentLesson = wordsForCurrentLesson.length;
+    unknownWordsForCurrentLesson = [];
     document.getElementById('quizArea').style.display = "block";
     displayNextWord();
 }
@@ -81,12 +82,11 @@ function updateToNextLesson() {
     registerBadge('Lesson_' + currentLesson);
     registerLessonScore(completionLessonScoreInPercentage, currentLesson);
     displayStatistics();
-    unknownWords = [];
     chooseLesson(currentLesson + 1);
 }
 
 function calculateScoreInPercentage() {
-    return Math.round(((totalCountOfWordsForCurrentLesson - unknownWords.length) / totalCountOfWordsForCurrentLesson)*100);
+    return Math.round(((totalCountOfWordsForCurrentLesson - unknownWordsForCurrentLesson.length) / totalCountOfWordsForCurrentLesson)*100);
 }
 
 function handleKeyUp(event) {
@@ -125,7 +125,7 @@ function checkAnswer() {
 const changeWordButton = document.getElementById("changeWord");
 changeWordButton.addEventListener("click", (event) => {
     const unknownWord = wordsForCurrentLesson[currentWordIndex].trad
-    unknownWords.push(unknownWord)
+    unknownWordsForCurrentLesson.push(unknownWord)
     modal.style.display = "block";
     modalText1.textContent = "La réponse était : " + wordsForCurrentLesson[currentWordIndex].trad + " 😏";
     displayNextWord();
