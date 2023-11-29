@@ -36,13 +36,13 @@ window.onload = function () {
         let databaseVersion = event.oldVersion;
 
         database = event.target.result;
-        if (databaseVersion >= 0) {
+        if (databaseVersion < 1) {
             if (!database.objectStoreNames.contains("badges")) {
                 let badgeStore = database.createObjectStore("badges", {keyPath: "badgeName"});
                 badgeStore.createIndex("badgeName", "badgeName", {unique: true});
             }
         }
-        if (databaseVersion >= 1) {
+        if (databaseVersion < 2) {
             if (!database.objectStoreNames.contains("lessons")) {
                 let lessonStore = database.createObjectStore("lessons", {keyPath: "lessonId"});
                 lessonStore.createIndex("lessonNumber", "lessonNumber", {unique: true});
@@ -122,7 +122,7 @@ function registerBadge(badgeName) {
 
 function displayStatistics() {
 
-    let transaction = database.transaction(["lessons", badgeStoreName], "readonly");
+    let transaction = database.transaction(["lessons"], "readonly");
     let lessonStore = transaction.objectStore("lessons");
     let getAllLessons = lessonStore.getAll();
 
