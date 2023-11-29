@@ -68,7 +68,7 @@ const initializeGame = () => {
 
 const checkAnswer = (e) => {
     let valueClicked = e.target.textContent
-    if (valueClicked != answer[1]) {
+    if (valueClicked !== answer[1]) {
         modal.style.display = "block";
         modalText1.textContent = "Vous avez perdu 😿";
         modalText2.innerHTML = `La réponse était <strong>${answer[1]}</strong>`;

@@ -1,8 +1,10 @@
 let database;
+
+// FOR DEV PURPOSE
 // const badgeTable = "badges"
 // const indexedDBVersion = 1;
 
-const badgeTable = "newBadges"
+const badgeStoreName = "newBadges"
 const indexedDBVersion = 2;
 
 window.onload = function () {
@@ -22,7 +24,7 @@ window.onload = function () {
         // FOR DEV PURPOSE
         // registerBadge("Lesson 1");
 
-        displayBadges();
+        displayStatistics();
     };
 
     request.onupgradeneeded = function (event) {
@@ -73,7 +75,7 @@ window.onload = function () {
 
 }
 
-function registerScore(scoreInPercentage, lessonNumber) {
+function registerLessonScore(lessonScore, lessonNumber) {
     let transaction = database.transaction(["lessons"], "readwrite");
     let lessonStore = transaction.objectStore("lessons");
 
@@ -83,24 +85,23 @@ function registerScore(scoreInPercentage, lessonNumber) {
         let data = e.target.result;
 
         if (data) {
-            if (!data.score || data.score < scoreInPercentage) {
-                data.score = scoreInPercentage
+            if (!data.score || data.score < lessonScore) {
+                data.score = lessonScore
             }
             lessonStore.put(data);
         } else {
             lessonStore.add({
                 lessonId: "Lesson_" + lessonNumber + "_" + Date.now(),
                 lessonNumber: lessonNumber,
-                score: scoreInPercentage
+                score: lessonScore
             });
         }
-        displayBadges();
     };
 }
 
 function registerBadge(badgeName) {
-    let transaction = database.transaction([badgeTable], "readwrite");
-    let badgeStore = transaction.objectStore(badgeTable);
+    let transaction = database.transaction([badgeStoreName], "readwrite");
+    let badgeStore = transaction.objectStore(badgeStoreName);
     let getBadge = badgeStore.get(badgeName);
 
     getBadge.onsuccess = function (e) {
@@ -112,7 +113,6 @@ function registerBadge(badgeName) {
         } else {
             badgeStore.add({badgeId: badgeName + "_" + Date.now(), badgeName: badgeName, numberOfThisBadge: 1});
         }
-        displayBadges();
     };
 
     getBadge.onerror = function () {
@@ -120,9 +120,32 @@ function registerBadge(badgeName) {
     };
 }
 
-function displayBadges() {
-    let transaction = database.transaction([badgeTable], "readonly");
-    let badgeStore = transaction.objectStore(badgeTable);
+function displayStatistics() {
+
+    let transaction = database.transaction(["lessons", badgeStoreName], "readonly");
+    let lessonStore = transaction.objectStore("lessons");
+    let getAllLessons = lessonStore.getAll();
+
+    getAllLessons.onsuccess = function (e) {
+        let lessons = e.target.result;
+        let lessonsMap = new Map();
+
+        lessons.forEach(lesson => {
+            lessonsMap.set(lesson.lessonNumber, lesson.score);
+        });
+
+        displayBadgesWithScores(lessonsMap);
+    };
+
+    getAllLessons.onerror = function () {
+        console.error("Erreur lors de la récupération des leçons");
+    };
+
+}
+
+function displayBadgesWithScores(lessonsMap) {
+    let transaction = database.transaction([badgeStoreName], "readonly");
+    let badgeStore = transaction.objectStore(badgeStoreName);
     let getAllBadges = badgeStore.getAll();
 
     getAllBadges.onsuccess = function (e) {
@@ -139,30 +162,59 @@ function displayBadges() {
         badgeListElement.innerHTML = '';
 
         badges.forEach(badge => {
-            let listItem = document.createElement('li');
-            listItem.className = 'badgeItem'; // Ajouter une classe pour le styliser en CSS
-
-            // Structure du badge
-            let badgeContainer = document.createElement('div');
-            badgeContainer.className = 'badgeContainer';
-
-            let badgeName = document.createElement('span');
-            badgeName.className = 'badgeName';
-            badgeName.textContent = badge.badgeName;
-
-            let badgeCount = document.createElement('span');
-            badgeCount.className = 'badgeCount';
-            badgeCount.textContent = `x${badge.numberOfThisBadge}`;
-
-            // Assemblage du badge
-            badgeContainer.appendChild(badgeName);
-            badgeContainer.appendChild(badgeCount);
-            listItem.appendChild(badgeContainer);
-            badgeListElement.appendChild(listItem);
+            createBadgeWithScoreForDisplay(badge, badgeListElement, lessonsMap)
         });
     };
 
     getAllBadges.onerror = function () {
         console.error("Erreur lors de la récupération des badges");
     };
+}
+
+function createBadgeWithScoreForDisplay(badge, badgeListElement, lessonsMap) {
+    let listItem = document.createElement('li');
+    listItem.className = 'badgeItem'; // Ajouter une classe pour le styliser en CSS
+
+    // Structure du badge
+    let badgeContainer = document.createElement('div');
+    badgeContainer.className = 'badgeContainer';
+
+    let badgeName = document.createElement('span');
+    badgeName.className = 'badgeName';
+    badgeName.textContent = badge.badgeName;
+
+    let badgeCount = document.createElement('span');
+    badgeCount.className = 'badgeCount';
+    badgeCount.textContent = `x${badge.numberOfThisBadge}`;
+
+    let lessonScore = lessonsMap.get(parseInt(badge.badgeName.match(/\d+/)[0]));
+    let starElement = createStarElement(lessonScore);
+
+    let lessonScoreDisplayed = document.createElement('span');
+    lessonScoreDisplayed.className = "lessonScoreDisplayed";
+    lessonScoreDisplayed.textContent = " (" + lessonScore + "%)";
+
+    badgeContainer.appendChild(badgeName);
+    badgeContainer.appendChild(badgeCount);
+    badgeContainer.appendChild(starElement);
+    badgeContainer.appendChild(lessonScoreDisplayed)
+
+    listItem.appendChild(badgeContainer);
+    badgeListElement.appendChild(listItem);
+}
+
+function createStarElement(score) {
+    let starContainer = document.createElement('div');
+    starContainer.className = 'lessonScoreStarContainer';
+
+    let starCount = Math.floor(score / 20);
+
+    for (let i = 0; i < starCount; i++) {
+        let star = document.createElement('span');
+        star.className = 'lessonScoreStar';
+        star.textContent = '⭐';
+        starContainer.appendChild(star);
+    }
+
+    return starContainer;
 }

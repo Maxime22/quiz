@@ -7,6 +7,14 @@ let lastWordDisplayed = null;
 let unknownWords = [];
 let totalCountOfWordsForCurrentLesson;
 
+// Récupérez la modale
+let modal = document.getElementById("myModal");
+modal.style.display = "none";
+// Récupérez l'élément <span> qui permet de fermer la modale
+let closeModal = document.getElementsByClassName("closeModal")[0];
+let modalText1 = document.getElementById('modalText1')
+let modalText2 = document.getElementById('modalText2')
+
 function populateLessonDropdown() {
     const lessonSet = new Set(lessons.map(wordObj => wordObj.lesson));
 
@@ -62,14 +70,17 @@ function getRandomWord() {
 
 function congratsUser() {
     playSound("lessonCompletedSound");
-    alert("Félicitations ! Vous avez terminé la leçon " + currentLesson);
+    // alert("Félicitations ! Vous avez terminé la leçon " + currentLesson);
+    modal.style.display = "block";
+    modalText1.textContent = "✨ Félicitations ! ✨ Vous avez terminé la leçon " + currentLesson + "! 😃";
 }
 
 function updateToNextLesson() {
-    let scoreInPercentage = calculateScoreInPercentage();
+    let completionLessonScoreInPercentage = calculateScoreInPercentage();
     document.getElementById('quizArea').style.display = "none";
     registerBadge('Lesson_' + currentLesson);
-    registerScore(scoreInPercentage, currentLesson);
+    registerLessonScore(completionLessonScoreInPercentage, currentLesson);
+    displayStatistics();
     unknownWords = [];
     chooseLesson(currentLesson + 1);
 }
@@ -115,9 +126,14 @@ const changeWordButton = document.getElementById("changeWord");
 changeWordButton.addEventListener("click", (event) => {
     const unknownWord = wordsForCurrentLesson[currentWordIndex].trad
     unknownWords.push(unknownWord)
-    alert("La réponse était " + wordsForCurrentLesson[currentWordIndex].trad);
+    modal.style.display = "block";
+    modalText1.textContent = "La réponse était : " + wordsForCurrentLesson[currentWordIndex].trad + " 😏";
     displayNextWord();
 });
+
+closeModal.onclick = function() {
+    modal.style.display = "none";
+}
 
 populateLessonDropdown();
 chooseLesson(1);
