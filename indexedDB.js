@@ -87,7 +87,7 @@ function registerLessonScore(lessonScore, lessonNumber) {
         let data = e.target.result;
 
         if (data) {
-            if (!data.score || data.score < lessonScore) {
+            if (!data.score || data.score > lessonScore) {
                 data.score = lessonScore
             }
             lessonStore.put(data);
