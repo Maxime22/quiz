@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../../../shared/css/style.css">
     <title>Choix de la leçon de Japonais</title>
 </head>
 
@@ -22,9 +22,9 @@
             <p><button id="changeWord" class="lessonQuizButton">Changer le mot</button></p>
             <p><button id="muteButton">Mute/Unmute</button></p>
         </div>
-        <audio id="correctSound" src="../bonne-reponse.mp3" preload="auto"></audio>
-        <audio id="wrongSound" src="../buzzer-or-wrong-answer-20582.mp3" preload="auto"></audio>
-        <audio id="lessonCompletedSound" src="../victory.mp3" preload="auto"></audio>
+        <audio id="correctSound" src="../../../media/bonne-reponse.mp3" preload="auto"></audio>
+        <audio id="wrongSound" src="../../../media/buzzer-or-wrong-answer-20582.mp3" preload="auto"></audio>
+        <audio id="lessonCompletedSound" src="../../../media/victory.mp3" preload="auto"></audio>
         <div id="badgeList">
             <h3 class="badgeTitle">Liste des succès</h3>
             <ul id="badgeListItems">
@@ -38,9 +38,9 @@
             <p id="modalText2"></p>
         </div>
     </div>
-    <script src="./japaneseLesson.js"></script>
-    <script src="../quizInput.js"></script>
-    <script src="../indexedDB.js"></script>
+    <script src="../js/japaneseLesson.js"></script>
+    <script src="../../../shared/js/quizInput.js"></script>
+    <script src="../../../shared/js/indexedDB.js"></script>
 </body>
 
 </html>
