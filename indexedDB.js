@@ -80,14 +80,13 @@ window.onload = function () {
 function registerLessonScore(lessonScore, lessonNumber) {
     let transaction = database.transaction(["lessons"], "readwrite");
     let lessonStore = transaction.objectStore("lessons");
-
-    let getLesson = lessonStore.get(lessonNumber);
+    let lessonIndex = lessonStore.index('lessonNumber');
+    let getLesson = lessonIndex.get(lessonNumber);
 
     getLesson.onsuccess = function (e) {
         let data = e.target.result;
-
         if (data) {
-            if (!data.score || data.score > lessonScore) {
+            if (!data.score || data.score < lessonScore) {
                 data.score = lessonScore
             }
             lessonStore.put(data);
@@ -104,7 +103,8 @@ function registerLessonScore(lessonScore, lessonNumber) {
 function registerBadge(badgeName) {
     let transaction = database.transaction([badgeStoreName], "readwrite");
     let badgeStore = transaction.objectStore(badgeStoreName);
-    let getBadge = badgeStore.get(badgeName);
+    let badgeIndex = badgeStore.index('badgeName');
+    let getBadge = badgeIndex.get(badgeName);
 
     getBadge.onsuccess = function (e) {
         let data = e.target.result;
