@@ -101,6 +101,16 @@ function playSound(id) {
     audio.currentTime = 0; // Revenir au début pour permettre des lectures consécutives
     audio.play();
 }
+document.getElementById('muteButton').addEventListener('click', function() {
+    const mediaElements = document.querySelectorAll('audio, video');
+    const isMuted = mediaElements[0] && mediaElements[0].muted;
+
+    mediaElements.forEach(media => {
+        media.muted = !isMuted;
+    });
+
+    this.textContent = isMuted ? 'Mute' : 'Unmute';
+});
 
 function checkAnswer() {
     const userTranslation = (document.getElementById('userLessonInput').value).toLowerCase().trim();
