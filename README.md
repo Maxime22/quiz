@@ -15,7 +15,7 @@ Suivez ces étapes pour installer et configurer le projet sur votre machine loca
 
 **Construisez l'image Docker de l'application :**
 
-- `make build` : cette commande va construire l'image Docker nécessaire pour exécuter l'application, en se basant sur les instructions fournies dans le Dockerfile et le fichier docker-compose.yml.
+- `make build` : cette commande va construire l'image Docker nécessaire pour exécuter l'application, en se basant sur les instructions fournies dans le fichier docker-compose.yml.
 
 **Installer les dépendances externes (npm) :**
 - `make install` : installer les dépendances dans le container et le changement se fera également sur votre environnement local

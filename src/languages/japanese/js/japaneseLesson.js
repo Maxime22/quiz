@@ -1,4 +1,4 @@
-const wordsTradsAndLessons = [
+export const japaneseWordsTradsAndLessons = [
     { "word": "vite", "trad": "hayaku", "lesson": "1" },
     { "word": "allons(-y)", "trad": "ikimashô", "lesson": "1" },
     { "word": "j'ai compris", "trad": "wakarimashita", "lesson": "1" },

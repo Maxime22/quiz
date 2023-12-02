@@ -22,9 +22,9 @@ window.onload = function () {
         console.log("Version actuelle de la base de données:", database.version);
 
         // FOR DEV PURPOSE
-        for (let i = 1; i < 22; i++) {
-            registerBadge("Lesson_" + i);
-        }
+        // for (let i = 1; i < 22; i++) {
+        //     registerBadge("Lesson_" + i);
+        // }
 
         displayStatistics();
     };

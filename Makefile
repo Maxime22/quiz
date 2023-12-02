@@ -1,5 +1,3 @@
-IMAGE_NAME=quiz-app
-
 # Construire l'image Docker et démarrer les services avec docker-compose
 build:
 	docker-compose up --build -d
