@@ -12,12 +12,12 @@
     <div id="quizContainer">
         <h1>Leçon Quiz</h1>
         <p class="lessonText">Sélectionnez une leçon :</p>
-        <select id="lessonSelect" onchange="chooseLesson()">
+        <select id="lessonSelect">
         </select>
 
         <div id="quizArea" style="display:none;">
             <p class="lessonText">Traduisez le mot suivant : <strong><span id="currentWord"></span></strong></p>
-            <input type="text" id="userLessonInput" placeholder="Entrez la traduction..." onkeyup="handleKeyUp(event)">
+            <input type="text" id="userLessonInput" placeholder="Entrez la traduction...">
             <span id="feedbackEmoji"></span>
             <p><button id="changeWord" class="lessonQuizButton">Changer le mot</button></p>
             <p><button id="muteButton">Mute/Unmute</button></p>
@@ -38,8 +38,7 @@
             <p id="modalText2"></p>
         </div>
     </div>
-    <script src="../js/japaneseLesson.js"></script>
-    <script src="../../../shared/js/quizInput.js"></script>
+    <script type="module" src="../../../shared/js/quizInput.js" data-html-source="japLessonsIndex"></script>
     <script src="../../../shared/js/indexedDB.js"></script>
 </body>
 
