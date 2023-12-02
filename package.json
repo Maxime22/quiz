@@ -1,0 +1,11 @@
+{
+  "name": "quiz",
+  "version": "1.0.0",
+  "description": "Quiz pour apprendre les langues",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
