@@ -1,5 +1,6 @@
 import {checkAnswer, congratsUser} from "./uiHelpers.js";
 import {showWrongAnswerModal} from "./modalManagement.js";
+import {displayStatistics, registerBadge, registerLessonScore} from "./indexedDB.js";
 import {lessons} from "./lessonsData.js";
 
 let currentLesson;

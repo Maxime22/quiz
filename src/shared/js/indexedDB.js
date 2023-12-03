@@ -77,11 +77,9 @@ window.onload = function () {
 
 }
 
-function registerLessonScore(lessonScore, lessonNumber) {
-    let transaction = database.transaction(["lessons"], "readwrite");
-    let lessonStore = transaction.objectStore("lessons");
-    let lessonIndex = lessonStore.index('lessonNumber');
-    let getLesson = lessonIndex.get(lessonNumber);
+export function registerLessonScore(lessonScore, lessonNumber) {
+    const lessonStore = openLessonTransaction(database, 'readwrite');
+    let getLesson = getLessonByNumber(lessonStore, lessonNumber)
 
     getLesson.onsuccess = function (e) {
         let data = e.target.result;
@@ -89,18 +87,34 @@ function registerLessonScore(lessonScore, lessonNumber) {
             if (!data.score || data.score < lessonScore) {
                 data.score = lessonScore
             }
-            lessonStore.put(data);
+            updateLesson(lessonStore,data)
         } else {
-            lessonStore.add({
-                lessonId: "Lesson_" + lessonNumber + "_" + Date.now(),
-                lessonNumber: lessonNumber,
-                score: lessonScore
-            });
+            addLesson(lessonStore, lessonNumber, lessonScore)
         }
     };
 }
 
-function registerBadge(badgeName) {
+function openLessonTransaction(database, mode = 'readonly') {
+    return database.transaction(['lessons'], mode).objectStore('lessons');
+}
+
+function getLessonByNumber(store, lessonNumber) {
+    return store.index('lessonNumber').get(lessonNumber);
+}
+
+function updateLesson(store, data) {
+    return store.put(data);
+}
+
+function addLesson(store, lessonNumber, score) {
+    return store.add({
+        lessonId: "Lesson_" + lessonNumber + "_" + Date.now(),
+        lessonNumber: lessonNumber,
+        score: score
+    });
+}
+
+export function registerBadge(badgeName) {
     let transaction = database.transaction([badgeStoreName], "readwrite");
     let badgeStore = transaction.objectStore(badgeStoreName);
     let badgeIndex = badgeStore.index('badgeName');
@@ -122,7 +136,7 @@ function registerBadge(badgeName) {
     };
 }
 
-function displayStatistics() {
+export function displayStatistics() {
     let transaction = database.transaction(["lessons"], "readonly");
     let lessonStore = transaction.objectStore("lessons");
     let getAllLessons = lessonStore.getAll();
