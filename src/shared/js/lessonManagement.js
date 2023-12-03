@@ -1,6 +1,6 @@
 import {checkAnswer, congratsUser} from "./uiHelpers.js";
 import {showWrongAnswerModal} from "./modalManagement.js";
-import {displayStatistics, registerBadge, registerLessonScore} from "./indexedDB.js";
+import {registerBadge, registerLessonScore, displayBadgesWithScores, displayStatistics} from "./indexedDB.js";
 import {lessons} from "./lessonsData.js";
 
 let currentLesson;
@@ -43,13 +43,13 @@ export function chooseLesson(lessons, lesson = null) {
     totalCountOfWordsForCurrentLesson = wordsForCurrentLesson.length;
     unknownWordsForCurrentLesson = [];
     document.getElementById('quizArea').style.display = "block";
-    displayNextWord(lessons, wordsForCurrentLesson, currentLesson);
+    displayNextWord(lessons, wordsForCurrentLesson, currentLesson, updateToNextLesson);
 }
 
-export function displayNextWord(lessons, wordsForCurrentLesson, currentLesson) {
+export function displayNextWord(lessons, wordsForCurrentLesson, currentLesson, callbackUpdateToNextLesson) {
     if (wordsForCurrentLesson.length === 0) {
         congratsUser(currentLesson);
-        updateToNextLesson(lessons);
+        callbackUpdateToNextLesson(lessons, displayStatistics);
         return;
     }
     const wordObj = getRandomWord(wordsForCurrentLesson, currentLesson, lastWordDisplayed);
@@ -64,16 +64,16 @@ if(changeWordButton){
         const unknownWord = wordsForCurrentLesson[currentWordIndex].trad
         unknownWordsForCurrentLesson.push(unknownWord)
         showWrongAnswerModal(wordsForCurrentLesson, currentWordIndex)
-        displayNextWord(lessons, wordsForCurrentLesson, currentLesson);
+        displayNextWord(lessons, wordsForCurrentLesson, currentLesson, updateToNextLesson);
     });
 }
 
-export function updateToNextLesson(lessons) {
+export function updateToNextLesson(lessons, callbackDisplayStatistics) {
     let completionLessonScoreInPercentage = calculateScoreInPercentage();
     document.getElementById('quizArea').style.display = "none";
     registerBadge('Lesson_' + currentLesson);
     registerLessonScore(completionLessonScoreInPercentage, currentLesson);
-    displayStatistics();
+    callbackDisplayStatistics(displayBadgesWithScores);
     chooseLesson(lessons, currentLesson + 1);
 }
 

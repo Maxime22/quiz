@@ -1,6 +1,6 @@
 import {playSound} from "./soundManagement.js";
 import {showLessonCompletedModal} from "./modalManagement.js";
-import {displayNextWord} from "./lessonManagement.js";
+import {displayNextWord, updateToNextLesson} from "./lessonManagement.js";
 
 export function checkAnswer(lessons, wordsForCurrentLesson, currentWordIndex, currentLesson) {
     const userTranslation = (document.getElementById('userLessonInput').value).toLowerCase().trim();
@@ -14,7 +14,7 @@ export function checkAnswer(lessons, wordsForCurrentLesson, currentWordIndex, cu
             playSound("correctSound");
         }
         wordsForCurrentLesson.splice(currentWordIndex, 1);  // Supprimez le mot du tableau
-        displayNextWord(lessons, wordsForCurrentLesson, currentLesson);
+        displayNextWord(lessons, wordsForCurrentLesson, currentLesson, updateToNextLesson);
     } else {
         feedbackEmojiElement.textContent = "❌"; // Émoji de croix rouge
         playSound("wrongSound");

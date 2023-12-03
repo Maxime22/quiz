@@ -8,26 +8,19 @@ const badgeStoreName = "newBadges"
 const indexedDBVersion = 2;
 
 window.onload = function () {
-    let request = window.indexedDB.open("QuizBDD", indexedDBVersion);
+    setupDB(displayStatistics)
+}
+
+export function setupDB(callbackDisplayStatistics){
+    if (database) {
+        console.log("coucou")
+        callbackDisplayStatistics(displayBadgesWithScores);
+        return;
+    }
+
+    let request = indexedDB.open("QuizBDD", indexedDBVersion);
     // FOR DEV PURPOSE
     // indexedDB.deleteDatabase("QuizBDD")
-
-    request.onerror = function (event) {
-        console.log("Erreur d'ouverture de la base de données", event);
-        console.error("Erreur IndexedDB:", event.target.error);
-    };
-
-    request.onsuccess = function (event) {
-        database = event.target.result;
-        console.log("Version actuelle de la base de données:", database.version);
-
-        // FOR DEV PURPOSE
-        // for (let i = 1; i < 22; i++) {
-        //     registerBadge("Lesson_" + i);
-        // }
-
-        displayStatistics();
-    };
 
     request.onupgradeneeded = function (event) {
         let transaction = event.target.transaction;
@@ -75,10 +68,27 @@ window.onload = function () {
         }
     };
 
+    request.onsuccess = function (event) {
+        database = event.target.result;
+        console.log("Version actuelle de la base de données:", database.version);
+
+        // FOR DEV PURPOSE
+        // for (let i = 1; i < 22; i++) {
+        //     registerBadge("Lesson_" + i);
+        // }
+
+        callbackDisplayStatistics(displayBadgesWithScores);
+    };
+
+    request.onerror = function (event) {
+        console.log("Erreur d'ouverture de la base de données", event);
+        console.error("Erreur IndexedDB:", event.target.error);
+    };
 }
 
-export function registerLessonScore(lessonScore, lessonNumber) {
-    const lessonStore = openLessonTransaction(database, 'readwrite');
+export function registerLessonScore(lessonScore, lessonNumber, callbackTransactionDone = () =>{}) {
+    let transaction = database.transaction(['lessons'], 'readwrite');
+    const lessonStore = transaction.objectStore('lessons');
     let getLesson = getLessonByNumber(lessonStore, lessonNumber)
 
     getLesson.onsuccess = function (e) {
@@ -91,22 +101,25 @@ export function registerLessonScore(lessonScore, lessonNumber) {
         } else {
             addLesson(lessonStore, lessonNumber, lessonScore)
         }
+
+        // Peut être en dessous ou peut être que ça fonctionne pas
+        transaction.oncomplete = callbackTransactionDone();
+        transaction.onerror = function(event) {
+            alert('error storing lesson ' + event.target.errorCode);
+        }
     };
+
 }
 
-function openLessonTransaction(database, mode = 'readonly') {
-    return database.transaction(['lessons'], mode).objectStore('lessons');
-}
-
-function getLessonByNumber(store, lessonNumber) {
+export function getLessonByNumber(store, lessonNumber) {
     return store.index('lessonNumber').get(lessonNumber);
 }
 
-function updateLesson(store, data) {
+export function updateLesson(store, data) {
     return store.put(data);
 }
 
-function addLesson(store, lessonNumber, score) {
+export function addLesson(store, lessonNumber, score) {
     return store.add({
         lessonId: "Lesson_" + lessonNumber + "_" + Date.now(),
         lessonNumber: lessonNumber,
@@ -136,7 +149,7 @@ export function registerBadge(badgeName) {
     };
 }
 
-export function displayStatistics() {
+export function displayStatistics(callbackDisplayBadgesWithScores) {
     let transaction = database.transaction(["lessons"], "readonly");
     let lessonStore = transaction.objectStore("lessons");
     let getAllLessons = lessonStore.getAll();
@@ -149,7 +162,7 @@ export function displayStatistics() {
             lessonsMap.set(lesson.lessonNumber, lesson.score);
         });
 
-        displayBadgesWithScores(lessonsMap);
+        callbackDisplayBadgesWithScores(lessonsMap, createBadgeWithScoreForDisplay);
     };
 
     getAllLessons.onerror = function () {
@@ -158,7 +171,7 @@ export function displayStatistics() {
 
 }
 
-function displayBadgesWithScores(lessonsMap) {
+export function displayBadgesWithScores(lessonsMap, callbackCreateBadgeWithScoreForDisplay) {
     let transaction = database.transaction([badgeStoreName], "readonly");
     let badgeStore = transaction.objectStore(badgeStoreName);
     let getAllBadges = badgeStore.getAll();
@@ -177,7 +190,7 @@ function displayBadgesWithScores(lessonsMap) {
         badgeListElement.innerHTML = '';
 
         badges.forEach(badge => {
-            createBadgeWithScoreForDisplay(badge, badgeListElement, lessonsMap)
+            callbackCreateBadgeWithScoreForDisplay(badge, badgeListElement, lessonsMap)
         });
     };
 
