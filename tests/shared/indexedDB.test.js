@@ -2,11 +2,11 @@
 import {setupDB, registerLessonScore} from "../../src/shared/js/indexedDB";
 require("fake-indexeddb/auto");
 
-test('We can register lesson score', function (done) {
+test('first test', function (done) {
     setupDB(function () {
         // registerLessonScore(80, 1 , function (lessons) {
         //     expect(lessons).toHaveLength(1);
             done();
         // });
     });
-}, 5000);
+});
