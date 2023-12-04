@@ -26,6 +26,7 @@ export function setupDB(callbackDisplayStatistics) {
     request.onupgradeneeded = function (event) {
         let transaction = event.target.transaction;
         let oldDatabaseVersion = event.oldVersion;
+        // onupgradeneeded a besoin d'un database local
         let database = event.target.result;
 
         if (oldDatabaseVersion < 1) {
@@ -86,11 +87,10 @@ export function setupDB(callbackDisplayStatistics) {
     };
 }
 
-export function registerLessonScore(lessonScore, lessonNumber, callbackTransactionDone = () => {
-}) {
+export function registerLessonScore(lessonScore, lessonNumber) {
     let transaction = database.transaction(['lessons'], 'readwrite');
     const lessonStore = transaction.objectStore('lessons');
-    let getLesson = getLessonByNumber(lessonStore, lessonNumber)
+    let getLesson = lessonStore.index('lessonNumber').get(lessonNumber);
 
     getLesson.onsuccess = function (e) {
         let data = e.target.result;
@@ -98,34 +98,19 @@ export function registerLessonScore(lessonScore, lessonNumber, callbackTransacti
             if (!data.score || data.score < lessonScore) {
                 data.score = lessonScore
             }
-            updateLesson(lessonStore, data)
+            lessonStore.put(data);
         } else {
-            addLesson(lessonStore, lessonNumber, lessonScore)
-        }
-
-        // Peut être en dessous ou peut être que ça fonctionne pas
-        transaction.oncomplete = callbackTransactionDone();
-        transaction.onerror = function (event) {
-            alert('error storing lesson ' + event.target.errorCode);
+            lessonStore.add({
+                lessonId: "Lesson_" + lessonNumber + "_" + Date.now(),
+                lessonNumber: lessonNumber,
+                score: lessonScore
+            });
         }
     };
-
-}
-
-export function getLessonByNumber(store, lessonNumber) {
-    return store.index('lessonNumber').get(lessonNumber);
-}
-
-export function updateLesson(store, data) {
-    return store.put(data);
-}
-
-export function addLesson(store, lessonNumber, score) {
-    return store.add({
-        lessonId: "Lesson_" + lessonNumber + "_" + Date.now(),
-        lessonNumber: lessonNumber,
-        score: score
-    });
+    // transaction.oncomplete = callback;
+    // transaction.onerror = function (event) {
+    //     alert('error storing lesson ' + event.target.errorCode);
+    // }
 }
 
 export function registerBadge(badgeName) {
