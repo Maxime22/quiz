@@ -64,7 +64,7 @@ export function setupDB(){
             console.log("Version actuelle de la base de données:", database.version);
 
             displayStatistics();
-            resolve("peanut butter");
+            resolve(database);
         };
 
         request.onerror = function (event) {
@@ -202,13 +202,13 @@ export function registerLessonScore(lessonScore, lessonNumber) {
                 updateLessonStore(lessonStore, data).then(() => {
                     resolve("Updated successfully");
                 }).catch((error) => {
-                    reject("Error in updating: " + error);
+                    reject("Error in updating lesson : " + error);
                 });
             } else {
                 addNewLesson(lessonStore, lessonNumber, lessonScore).then(() => {
                     resolve("Added successfully");
                 }).catch((error) => {
-                    reject("Error in adding: " + error);
+                    reject("Error in adding lesson : " + error);
                 });
             }
         };
