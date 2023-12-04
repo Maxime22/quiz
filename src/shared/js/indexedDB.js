@@ -1,50 +1,29 @@
 let database;
 
-// FOR DEV PURPOSE
-// const badgeTable = "badges"
-// const indexedDBVersion = 1;
-
 const badgeStoreName = "newBadges"
 const indexedDBVersion = 2;
 
 window.onload = function () {
+    setupDB();
+}
+
+function setupDB(){
     let request = window.indexedDB.open("QuizBDD", indexedDBVersion);
     // FOR DEV PURPOSE
     // indexedDB.deleteDatabase("QuizBDD")
 
-    request.onerror = function (event) {
-        console.log("Erreur d'ouverture de la base de données", event);
-        console.error("Erreur IndexedDB:", event.target.error);
-    };
-
-    request.onsuccess = function (event) {
-        database = event.target.result;
-        console.log("Version actuelle de la base de données:", database.version);
-
-        // FOR DEV PURPOSE
-        // for (let i = 1; i < 22; i++) {
-        //     registerBadge("Lesson_" + i);
-        // }
-
-        displayStatistics();
-    };
-
     request.onupgradeneeded = function (event) {
         let transaction = event.target.transaction;
-        transaction.onerror = function (event) {
-            console.error("Erreur de transaction:", event.target.error);
-        };
+        let database = event.target.result;
+        let oldDatabaseVersion = event.oldVersion;
 
-        let databaseVersion = event.oldVersion;
-
-        database = event.target.result;
-        if (databaseVersion < 1) {
+        if (oldDatabaseVersion < 1) {
             if (!database.objectStoreNames.contains("badges")) {
                 let badgeStore = database.createObjectStore("badges", {keyPath: "badgeName"});
                 badgeStore.createIndex("badgeName", "badgeName", {unique: true});
             }
         }
-        if (databaseVersion < 2) {
+        if (oldDatabaseVersion < 2) {
             if (!database.objectStoreNames.contains("lessons")) {
                 let lessonStore = database.createObjectStore("lessons", {keyPath: "lessonId"});
                 lessonStore.createIndex("lessonNumber", "lessonNumber", {unique: true});
@@ -73,56 +52,26 @@ window.onload = function () {
                 }
             }
         }
+
+        transaction.onerror = function (event) {
+            console.error("Erreur de transaction:", event.target.error);
+        };
     };
 
-}
+    request.onsuccess = function (event) {
+        database = event.target.result;
+        console.log("Version actuelle de la base de données:", database.version);
 
-function registerLessonScore(lessonScore, lessonNumber) {
-    let transaction = database.transaction(["lessons"], "readwrite");
-    let lessonStore = transaction.objectStore("lessons");
-    let lessonIndex = lessonStore.index('lessonNumber');
-    let getLesson = lessonIndex.get(lessonNumber);
+        displayStatistics();
+    };
 
-    getLesson.onsuccess = function (e) {
-        let data = e.target.result;
-        if (data) {
-            if (!data.score || data.score < lessonScore) {
-                data.score = lessonScore
-            }
-            lessonStore.put(data);
-        } else {
-            lessonStore.add({
-                lessonId: "Lesson_" + lessonNumber + "_" + Date.now(),
-                lessonNumber: lessonNumber,
-                score: lessonScore
-            });
-        }
+    request.onerror = function (event) {
+        console.log("Erreur d'ouverture de la base de données", event);
+        console.error("Erreur IndexedDB:", event.target.error);
     };
 }
 
-function registerBadge(badgeName) {
-    let transaction = database.transaction([badgeStoreName], "readwrite");
-    let badgeStore = transaction.objectStore(badgeStoreName);
-    let badgeIndex = badgeStore.index('badgeName');
-    let getBadge = badgeIndex.get(badgeName);
-
-    getBadge.onsuccess = function (e) {
-        let data = e.target.result;
-
-        if (data) {
-            data.numberOfThisBadge++;
-            badgeStore.put(data);
-        } else {
-            badgeStore.add({badgeId: badgeName + "_" + Date.now(), badgeName: badgeName, numberOfThisBadge: 1});
-        }
-    };
-
-    getBadge.onerror = function () {
-        console.error("Erreur lors de l'enregistrement du badge");
-    };
-}
-
-function displayStatistics() {
+export function displayStatistics() {
     let transaction = database.transaction(["lessons"], "readonly");
     let lessonStore = transaction.objectStore("lessons");
     let getAllLessons = lessonStore.getAll();
@@ -230,4 +179,50 @@ function calculateStars(score) {
     if (score >= 50) return 3;
     if (score >= 25) return 2;
     return 1;
+}
+
+
+export function registerLessonScore(lessonScore, lessonNumber) {
+    let transaction = database.transaction(["lessons"], "readwrite");
+    let lessonStore = transaction.objectStore("lessons");
+    let lessonIndex = lessonStore.index('lessonNumber');
+    let getLesson = lessonIndex.get(lessonNumber);
+
+    getLesson.onsuccess = function (e) {
+        let data = e.target.result;
+        if (data) {
+            if (!data.score || data.score < lessonScore) {
+                data.score = lessonScore
+            }
+            lessonStore.put(data);
+        } else {
+            lessonStore.add({
+                lessonId: "Lesson_" + lessonNumber + "_" + Date.now(),
+                lessonNumber: lessonNumber,
+                score: lessonScore
+            });
+        }
+    };
+}
+
+export function registerBadge(badgeName) {
+    let transaction = database.transaction([badgeStoreName], "readwrite");
+    let badgeStore = transaction.objectStore(badgeStoreName);
+    let badgeIndex = badgeStore.index('badgeName');
+    let getBadge = badgeIndex.get(badgeName);
+
+    getBadge.onsuccess = function (e) {
+        let data = e.target.result;
+
+        if (data) {
+            data.numberOfThisBadge++;
+            badgeStore.put(data);
+        } else {
+            badgeStore.add({badgeId: badgeName + "_" + Date.now(), badgeName: badgeName, numberOfThisBadge: 1});
+        }
+    };
+
+    getBadge.onerror = function () {
+        console.error("Erreur lors de l'enregistrement du badge");
+    };
 }

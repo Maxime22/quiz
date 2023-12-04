@@ -1,6 +1,7 @@
 import {checkAnswer, congratsUser} from "./uiHelpers.js";
 import {showWrongAnswerModal} from "./modalManagement.js";
 import {lessons} from "./lessonsData.js";
+import {displayStatistics, registerBadge, registerLessonScore} from "./indexedDB.js";
 
 let currentLesson;
 let wordsForCurrentLesson = [];
@@ -73,10 +74,14 @@ if (changeWordButton) {
 export function updateToNextLesson(lessons) {
     let completionLessonScoreInPercentage = calculateScoreInPercentage();
     document.getElementById('quizArea').style.display = "none";
+    updateDatabaseAndDisplay(completionLessonScoreInPercentage)
+    chooseLesson(lessons, currentLesson + 1);
+}
+
+function updateDatabaseAndDisplay(completionLessonScoreInPercentage){
     registerBadge('Lesson_' + currentLesson);
     registerLessonScore(completionLessonScoreInPercentage, currentLesson);
     displayStatistics();
-    chooseLesson(lessons, currentLesson + 1);
 }
 
 export function getRandomWord(wordsForCurrentLesson, currentLesson, lastWordDisplayed) {
