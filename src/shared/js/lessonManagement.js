@@ -17,6 +17,7 @@ export function handleKeyUp(event) {
         checkAnswer(lessons, wordsForCurrentLesson, currentWordIndex, currentLesson, lastWordDisplayed);
     }
 }
+
 export function populateLessonDropdown(lessons) {
     const lessonSet = new Set(lessons.map(wordObj => wordObj.lesson));
 
@@ -58,10 +59,12 @@ export function displayNextWord(lessons, wordsForCurrentLesson, currentLesson) {
     currentWordIndex = wordsForCurrentLesson.indexOf(wordObj);
 }
 
-if(changeWordButton){
+if (changeWordButton) {
     changeWordButton.addEventListener("click", (event) => {
-        const unknownWord = wordsForCurrentLesson[currentWordIndex].trad
-        unknownWordsForCurrentLesson.push(unknownWord)
+        let unknownWord = wordsForCurrentLesson[currentWordIndex].trad
+        if (unknownWordsForCurrentLesson.indexOf(unknownWord) === -1) {
+            unknownWordsForCurrentLesson.push(unknownWord)
+        }
         showWrongAnswerModal(wordsForCurrentLesson, currentWordIndex)
         displayNextWord(lessons, wordsForCurrentLesson, currentLesson);
     });
