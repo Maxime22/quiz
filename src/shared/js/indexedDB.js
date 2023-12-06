@@ -1,4 +1,4 @@
-let database;
+import {displayBadges} from "./displayBadgeAndScore.js";
 
 const badgeStoreName = "newBadges"
 const indexedDBVersion = 2;
@@ -60,10 +60,10 @@ export function setupDB(){
         };
 
         request.onsuccess = function (event) {
-            database = event.target.result;
-            console.log("Version actuelle de la base de données:", database.version);
+            let database = event.target.result;
+            // console.log("Version actuelle de la base de données:", database.version);
 
-            displayStatistics();
+            displayStatistics(database);
             resolve(database);
         };
 
@@ -75,123 +75,71 @@ export function setupDB(){
     });
 }
 
-export function displayStatistics() {
-    let transaction = database.transaction(["lessons"], "readonly");
-    let lessonStore = transaction.objectStore("lessons");
-    let getAllLessons = lessonStore.getAll();
-
-    getAllLessons.onsuccess = function (e) {
-        let lessons = e.target.result;
-        let lessonsMap = new Map();
-
-        lessons.forEach(lesson => {
-            lessonsMap.set(lesson.lessonNumber, lesson.score);
-        });
-
-        displayBadgesWithScores(lessonsMap);
-    };
-
-    getAllLessons.onerror = function () {
-        console.error("Erreur lors de la récupération des leçons");
-    };
-
+export function displayStatistics(database) {
+    getLessons(database).then(lessons => {
+        displayBadgesWithScores(database, createLessonsMap(lessons));
+    }).catch(error => {
+        console.error("Erreur lors de l'affichage des statistiques :", error);
+    });
 }
 
-function displayBadgesWithScores(lessonsMap) {
-    let transaction = database.transaction([badgeStoreName], "readonly");
-    let badgeStore = transaction.objectStore(badgeStoreName);
-    let getAllBadges = badgeStore.getAll();
-
-    getAllBadges.onsuccess = function (e) {
-        let badges = e.target.result;
-
-        // Tri des badges par numéro de leçon
-        badges.sort((a, b) => {
-            let numberA = parseInt(a.badgeName.match(/\d+/)[0]);
-            let numberB = parseInt(b.badgeName.match(/\d+/)[0]);
-            return numberA - numberB;
-        });
-
-        let badgeListElement = document.getElementById('badgeListItems');
-        badgeListElement.innerHTML = '';
-
-        badges.forEach(badge => {
-            createBadgeWithScoreForDisplay(badge, badgeListElement, lessonsMap)
-        });
-    };
-
-    getAllBadges.onerror = function () {
-        console.error("Erreur lors de la récupération des badges");
-    };
+function createLessonsMap(lessons) {
+    const lessonsMap = new Map();
+    lessons.forEach(lesson => {
+        lessonsMap.set(lesson.lessonNumber, lesson.score);
+    });
+    return lessonsMap;
 }
 
-function createBadgeWithScoreForDisplay(badge, badgeListElement, lessonsMap) {
-    let listItem = document.createElement('li');
-    listItem.className = 'badgeItem'; // Ajouter une classe pour le styliser en CSS
-
-    // Structure du badge
-    let badgeContainer = document.createElement('div');
-    badgeContainer.className = 'badgeContainer';
-
-    let badgeName = document.createElement('span');
-    badgeName.className = 'badgeName';
-    badgeName.textContent = badge.badgeName;
-
-    let badgeCount = document.createElement('span');
-    badgeCount.className = 'badgeCount';
-    badgeCount.textContent = `x${badge.numberOfThisBadge}`;
-
-    let lessonScore = lessonsMap.get(parseInt(badge.badgeName.match(/\d+/)[0]));
-    if (!lessonScore){
-        lessonScore = "??";
-    }
-    let starElement = createStarElement(lessonScore);
-
-    let lessonScoreDisplayed = document.createElement('span');
-    lessonScoreDisplayed.className = "lessonScoreDisplayed";
-    lessonScoreDisplayed.textContent = " (" + lessonScore + "%)";
-
-    badgeContainer.appendChild(badgeName);
-    badgeContainer.appendChild(badgeCount);
-    badgeContainer.appendChild(starElement);
-    badgeContainer.appendChild(lessonScoreDisplayed)
-
-    listItem.appendChild(badgeContainer);
-    badgeListElement.appendChild(listItem);
+function getLessons(database){
+    return new Promise((resolve, reject) => {
+        const transaction = database.transaction(["lessons"], "readonly");
+        const lessonStore = transaction.objectStore("lessons");
+        let getAllLessons = lessonStore.getAll();
+        getAllLessons.onsuccess = e => resolve(e.target.result);
+        getAllLessons.onerror = e => reject("Erreur lors de la récupération des leçons");
+    })
 }
 
-function createStarElement(score) {
-    let starContainer = document.createElement('div');
-    starContainer.className = 'lessonScoreStarContainer';
-
-    let starCount = calculateStars(score);
-
-
-    for (let i = 0; i < starCount; i++) {
-        let star = document.createElement('span');
-        star.className = 'lessonScoreStar';
-        star.textContent = '⭐';
-        starContainer.appendChild(star);
-    }
-
-    return starContainer;
+function displayBadgesWithScores(database, lessonsMap) {
+    getBadgesData(database)
+        .then(badges => {
+            displayBadges(badges, lessonsMap);
+        })
+        .catch(error => console.error(error));
 }
 
-function calculateStars(score) {
-    if (score === 100) return 5;
-    if (score >= 75) return 4;
-    if (score >= 50) return 3;
-    if (score >= 25) return 2;
-    return 1;
+export function getBadgesData(database) {
+    return new Promise((resolve, reject) => {
+        let transaction = database.transaction([badgeStoreName], "readonly");
+        let badgeStore = transaction.objectStore(badgeStoreName);
+        let getAllBadges = badgeStore.getAll();
+
+        getAllBadges.onsuccess = function (e) {
+            let badges = e.target.result;
+            // Tri des badges par numéro de leçon
+            badges.sort((a, b) => {
+                let numberA = parseInt(a.badgeName.match(/\d+/)[0]);
+                let numberB = parseInt(b.badgeName.match(/\d+/)[0]);
+                return numberA - numberB;
+            });
+            resolve(badges);
+        };
+
+        getAllBadges.onerror = function () {
+            reject("Erreur lors de la récupération des badges");
+        };
+    });
 }
 
-export function registerLessonScore(lessonScore, lessonNumber) {
+export function registerLessonScore(database, lessonScore, lessonNumber) {
     return new Promise((resolve, reject) => {
         let transaction = database.transaction(["lessons"], "readwrite");
         let lessonStore = transaction.objectStore("lessons");
         let lessonIndex = lessonStore.index('lessonNumber');
         let getLesson = lessonIndex.get(lessonNumber);
 
+        // NECESSITE PROMISE POUR TEST
         getLesson.onsuccess = function (e) {
             let data = e.target.result;
 
@@ -200,13 +148,13 @@ export function registerLessonScore(lessonScore, lessonNumber) {
                     data.score = lessonScore;
                 }
                 updateLessonStore(lessonStore, data).then(() => {
-                    resolve("Updated successfully");
+                    resolve("Lesson updated successfully");
                 }).catch((error) => {
                     reject("Error in updating lesson : " + error);
                 });
             } else {
                 addNewLesson(lessonStore, lessonNumber, lessonScore).then(() => {
-                    resolve("Added successfully");
+                    resolve("Lesson added successfully");
                 }).catch((error) => {
                     reject("Error in adding lesson : " + error);
                 });
@@ -222,6 +170,7 @@ export function registerLessonScore(lessonScore, lessonNumber) {
 function updateLessonStore(lessonStore, data) {
     return new Promise((resolve, reject) => {
         // Suppose lessonStore.put returns a request object
+        // NECESSITE PROMISE POUR TEST
         let request = lessonStore.put(data);
 
         request.onsuccess = function () {
@@ -253,24 +202,63 @@ function addNewLesson(lessonStore, lessonNumber, lessonScore) {
     });
 }
 
-export function registerBadge(badgeName) {
-    let transaction = database.transaction([badgeStoreName], "readwrite");
-    let badgeStore = transaction.objectStore(badgeStoreName);
-    let badgeIndex = badgeStore.index('badgeName');
-    let getBadge = badgeIndex.get(badgeName);
+export function registerBadge(database, badgeName) {
+    return new Promise((resolve, reject) => {
+        let transaction = database.transaction([badgeStoreName], "readwrite");
+        let badgeStore = transaction.objectStore(badgeStoreName);
+        let badgeIndex = badgeStore.index('badgeName');
+        let getBadge = badgeIndex.get(badgeName);
 
-    getBadge.onsuccess = function (e) {
-        let data = e.target.result;
+        getBadge.onsuccess = function (e) {
+            let data = e.target.result;
 
-        if (data) {
-            data.numberOfThisBadge++;
-            badgeStore.put(data);
-        } else {
-            badgeStore.add({badgeId: badgeName + "_" + Date.now(), badgeName: badgeName, numberOfThisBadge: 1});
-        }
-    };
+            if (data) {
+                data.numberOfThisBadge++;
+                updateBadge(badgeStore, data).then(() => {
+                    resolve("Badge updated successfully");
+                }).catch((error) => {
+                    reject("Error in updating badge : " + error);
+                });
+            } else {
+                addNewBadge(badgeStore, badgeName).then(() => {
+                    resolve("Badge added successfully");
+                }).catch((error) => {
+                    reject("Error in adding badge : " + error);
+                });
+            }
+        };
 
-    getBadge.onerror = function () {
-        console.error("Erreur lors de l'enregistrement du badge");
-    };
+        getBadge.onerror = function () {
+            console.error("Erreur lors de l'enregistrement du badge");
+        };
+    });
+}
+
+function updateBadge(badgeStore, data) {
+    return new Promise((resolve, reject) => {
+        // Suppose lessonStore.put returns a request object
+        let request = badgeStore.put(data);
+
+        request.onsuccess = function () {
+            resolve();
+        };
+
+        request.onerror = function (e) {
+            reject(e.target.errorCode);
+        };
+    });
+}
+
+function addNewBadge(badgeStore, badgeName) {
+    return new Promise((resolve, reject) => {
+        let request = badgeStore.add({badgeId: badgeName + "_" + Date.now(), badgeName: badgeName, numberOfThisBadge: 1});
+
+        request.onsuccess = function () {
+            resolve();
+        };
+
+        request.onerror = function (e) {
+            reject(e.target.errorCode);
+        };
+    });
 }

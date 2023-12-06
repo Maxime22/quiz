@@ -1,7 +1,7 @@
 import {checkAnswer, congratsUser} from "./uiHelpers.js";
 import {showWrongAnswerModal} from "./modalManagement.js";
 import {lessons} from "./lessonsData.js";
-import {displayStatistics, registerBadge, registerLessonScore} from "./indexedDB.js";
+import {displayStatistics, registerBadge, registerLessonScore, setupDB} from "./indexedDB.js";
 
 let currentLesson;
 let wordsForCurrentLesson = [];
@@ -79,9 +79,12 @@ export function updateToNextLesson(lessons) {
 }
 
 function updateDatabaseAndDisplay(completionLessonScoreInPercentage){
-    registerBadge('Lesson_' + currentLesson);
-    registerLessonScore(completionLessonScoreInPercentage, currentLesson);
-    displayStatistics();
+    setupDB().then((database=>{
+            registerBadge(database, 'Lesson_' + currentLesson);
+            registerLessonScore(database, completionLessonScoreInPercentage, currentLesson);
+            displayStatistics(database);
+        }
+    ));
 }
 
 export function getRandomWord(wordsForCurrentLesson, currentLesson, lastWordDisplayed) {
