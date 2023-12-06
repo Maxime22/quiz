@@ -86,7 +86,7 @@ export function displayStatistics(database) {
 function createLessonsMap(lessons) {
     const lessonsMap = new Map();
     lessons.forEach(lesson => {
-        lessonsMap.set(lesson.lessonNumber, lesson.score);
+        lessonsMap.set(lesson.lessonNumber, { score: lesson.score, timeSpent: lesson.timeSpent });
     });
     return lessonsMap;
 }
@@ -132,7 +132,7 @@ export function getBadgesData(database) {
     });
 }
 
-export function registerLessonScore(database, lessonScore, lessonNumber) {
+export function registerLessonScore(database, lessonScore, lessonNumber, timeSpent) {
     return new Promise((resolve, reject) => {
         let transaction = database.transaction(["lessons"], "readwrite");
         let lessonStore = transaction.objectStore("lessons");
@@ -147,13 +147,16 @@ export function registerLessonScore(database, lessonScore, lessonNumber) {
                 if (!data.score || data.score < lessonScore) {
                     data.score = lessonScore;
                 }
+                if (!data.timeSpent || (data.score <= lessonScore) || (data.timeSpent < timeSpent && data.score === lessonScore) ) {
+                    data.timeSpent = timeSpent;
+                }
                 updateLessonStore(lessonStore, data).then(() => {
                     resolve("Lesson updated successfully");
                 }).catch((error) => {
                     reject("Error in updating lesson : " + error);
                 });
             } else {
-                addNewLesson(lessonStore, lessonNumber, lessonScore).then(() => {
+                addNewLesson(lessonStore, lessonNumber, lessonScore, timeSpent).then(() => {
                     resolve("Lesson added successfully");
                 }).catch((error) => {
                     reject("Error in adding lesson : " + error);
@@ -183,13 +186,14 @@ function updateLessonStore(lessonStore, data) {
     });
 }
 
-function addNewLesson(lessonStore, lessonNumber, lessonScore) {
+function addNewLesson(lessonStore, lessonNumber, lessonScore, timeSpent) {
     return new Promise((resolve, reject) => {
         // Suppose lessonStore.add returns a request object
         let request = lessonStore.add({
             lessonId: "Lesson_" + lessonNumber + "_" + Date.now(),
             lessonNumber: lessonNumber,
-            score: lessonScore
+            score: lessonScore,
+            timeSpent: timeSpent
         });
 
         request.onsuccess = function () {

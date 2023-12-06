@@ -26,15 +26,15 @@ function createBadgeWithScoreForDisplay(badge, badgeListElement, lessonsMap) {
     badgeCount.className = 'badgeCount';
     badgeCount.textContent = `x${badge.numberOfThisBadge}`;
 
-    let lessonScore = lessonsMap.get(parseInt(badge.badgeName.match(/\d+/)[0]));
-    if (!lessonScore){
-        lessonScore = "??";
-    }
+    let lessonNumber = parseInt(badge.badgeName.match(/\d+/)[0]);
+    let lessonDetails = lessonsMap.get(lessonNumber);
+    let lessonScore = (lessonDetails && lessonDetails.score) ? lessonDetails.score : "??";
+    let lessonTimeSpent = (lessonDetails && lessonDetails.timeSpent) ? lessonDetails.timeSpent : "??";
     let starElement = createStarElement(lessonScore);
 
     let lessonScoreDisplayed = document.createElement('span');
     lessonScoreDisplayed.className = "lessonScoreDisplayed";
-    lessonScoreDisplayed.textContent = " (" + lessonScore + "%)";
+    lessonScoreDisplayed.textContent = ` (${lessonScore}% / ${lessonTimeSpent}s)`;
 
     badgeContainer.appendChild(badgeName);
     badgeContainer.appendChild(badgeCount);

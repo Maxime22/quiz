@@ -10,10 +10,14 @@ let unknownWordsForCurrentLesson = [];
 let currentWordIndex;
 let lastWordDisplayed = null;
 const changeWordButton = document.getElementById("changeWord");
+let timerStart = null;
 
 export function handleKeyUp(event) {
     // "Enter"
     if (event.keyCode === 13) {
+        if (timerStart === null) {
+            timerStart = Date.now(); // Démarrer le timer à la première réponse
+        }
         checkAnswer(lessons, wordsForCurrentLesson, currentWordIndex, currentLesson, lastWordDisplayed);
     }
 }
@@ -72,16 +76,26 @@ if (changeWordButton) {
 }
 
 export function updateToNextLesson(lessons) {
+    let timeSpent = calculateTimeSpent();
     let completionLessonScoreInPercentage = calculateScoreInPercentage();
     document.getElementById('quizArea').style.display = "none";
-    updateDatabaseAndDisplay(completionLessonScoreInPercentage).then(() => chooseLesson(lessons, currentLesson + 1))
+    updateDatabaseAndDisplay(completionLessonScoreInPercentage, timeSpent).then(() => chooseLesson(lessons, currentLesson + 1))
 }
 
-function updateDatabaseAndDisplay(completionLessonScoreInPercentage){
+function calculateTimeSpent() {
+    if (timerStart) {
+        let endTime = Date.now();
+        let timeSpent = ((endTime - timerStart) / 1000).toFixed(2); // Temps en secondes avec 2 décimales
+        return parseFloat(timeSpent); // Convertir en nombre si nécessaire
+    }
+    return 0;
+}
+
+function updateDatabaseAndDisplay(completionLessonScoreInPercentage, timeSpent){
     return new Promise((resolve, reject) => {
         setupDB().then((database => {
                 registerBadge(database, 'Lesson_' + currentLesson);
-                registerLessonScore(database, completionLessonScoreInPercentage, currentLesson);
+                registerLessonScore(database, completionLessonScoreInPercentage, currentLesson, timeSpent);
                 displayStatistics(database);
                 resolve();
             }
