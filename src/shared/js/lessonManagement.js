@@ -10,7 +10,6 @@ let unknownWordsForCurrentLesson = [];
 let currentWordIndex;
 let lastWordDisplayed = null;
 const changeWordButton = document.getElementById("changeWord");
-const selectElement = document.getElementById('lessonSelect');
 
 export function handleKeyUp(event) {
     // "Enter"
@@ -32,6 +31,7 @@ export function populateLessonDropdown(lessons) {
 }
 
 export function chooseLesson(lessons, lesson = null) {
+    const selectElement = document.getElementById('lessonSelect');
     if (selectElement) {
         if (lesson) {
             currentLesson = lesson;
@@ -74,17 +74,19 @@ if (changeWordButton) {
 export function updateToNextLesson(lessons) {
     let completionLessonScoreInPercentage = calculateScoreInPercentage();
     document.getElementById('quizArea').style.display = "none";
-    updateDatabaseAndDisplay(completionLessonScoreInPercentage)
-    chooseLesson(lessons, currentLesson + 1);
+    updateDatabaseAndDisplay(completionLessonScoreInPercentage).then(() => chooseLesson(lessons, currentLesson + 1))
 }
 
 function updateDatabaseAndDisplay(completionLessonScoreInPercentage){
-    setupDB().then((database=>{
-            registerBadge(database, 'Lesson_' + currentLesson);
-            registerLessonScore(database, completionLessonScoreInPercentage, currentLesson);
-            displayStatistics(database);
-        }
-    ));
+    return new Promise((resolve, reject) => {
+        setupDB().then((database => {
+                registerBadge(database, 'Lesson_' + currentLesson);
+                registerLessonScore(database, completionLessonScoreInPercentage, currentLesson);
+                displayStatistics(database);
+                resolve();
+            }
+        ));
+    });
 }
 
 export function getRandomWord(wordsForCurrentLesson, currentLesson, lastWordDisplayed) {
