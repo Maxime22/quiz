@@ -46,6 +46,10 @@ export function chooseLesson(lessons, lesson = null) {
     }
     wordsForCurrentLesson = lessons.filter(word => parseInt(word.lesson) === currentLesson);
     totalCountOfWordsForCurrentLesson = wordsForCurrentLesson.length;
+    if(totalCountOfWordsForCurrentLesson === 0){
+        chooseLesson(lessons ,currentLesson + 1)
+        return;
+    }
     unknownWordsForCurrentLesson = [];
     document.getElementById('quizArea').style.display = "block";
     displayNextWord(lessons, wordsForCurrentLesson, currentLesson);
@@ -77,9 +81,12 @@ if (changeWordButton) {
 
 export function updateToNextLesson(lessons) {
     let timeSpent = calculateTimeSpent();
+    timerStart = null; // restart for each lesson
     let completionLessonScoreInPercentage = calculateScoreInPercentage();
     document.getElementById('quizArea').style.display = "none";
-    updateDatabaseAndDisplay(completionLessonScoreInPercentage, timeSpent).then(() => chooseLesson(lessons, currentLesson + 1))
+    updateDatabaseAndDisplay(completionLessonScoreInPercentage, timeSpent).then(() =>
+        chooseLesson(lessons, currentLesson + 1)
+    )
 }
 
 function calculateTimeSpent() {
