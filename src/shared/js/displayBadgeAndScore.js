@@ -102,10 +102,6 @@ function createStarElement(score, timeSpent, numberOfWordsInTheLesson) {
 
     let starCount = calculateStars(score);
 
-    if(starCount > 2 && (!score || score < 90)){
-        starCount--
-    }
-    console.log(timeSpent)
     if(starCount > 2 && (timeSpent === "??" || (numberOfWordsInTheLesson * 3 < timeSpent))){
         starCount--
     }

@@ -7,7 +7,7 @@ let modalText1 = document.getElementById('modalText1')
 
 export function showWrongAnswerModal(wordsForCurrentLesson, currentWordIndex) {
     modal.style.display = "block";
-    modalText1.textContent = "La réponse était : " + wordsForCurrentLesson[currentWordIndex].trad + " 😏";
+    modalText1.textContent = "La réponse pour " + wordsForCurrentLesson[currentWordIndex].word + " était : " + wordsForCurrentLesson[currentWordIndex].trad + " 😏";
 }
 
 export function showLessonCompletedModal(currentLesson) {
