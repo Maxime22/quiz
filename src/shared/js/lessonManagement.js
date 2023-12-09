@@ -1,7 +1,8 @@
 import {checkAnswer, congratsUser} from "./uiHelpers.js";
-import {showWrongAnswerModal} from "./modalManagement.js";
-import {lessons} from "./lessonsData.js";
-import {displayStatistics, registerBadge, registerLessonScore, setupDB} from "./indexedDB.js";
+import {showSuccess, showWrongAnswerModal} from "./modalManagement.js";
+import {lessons, sourceLanguage} from "./lessonsData.js";
+import {registerLessonScore, setupDB} from "./indexedDB.js";
+import {displayStatistics} from "./displayBadgeAndScore.js";
 
 let currentLesson;
 let wordsForCurrentLesson = [];
@@ -10,6 +11,7 @@ let unknownWordsForCurrentLesson = [];
 let currentWordIndex;
 let lastWordDisplayed = null;
 const changeWordButton = document.getElementById("changeWord");
+const displaySuccessButton = document.getElementById("displaySuccess");
 let timerStart = null;
 
 export function handleKeyUp(event) {
@@ -79,6 +81,19 @@ if (changeWordButton) {
     });
 }
 
+if (displaySuccessButton) {
+    displaySuccessButton.addEventListener("click", (event) => {
+        return new Promise((resolve, reject) => {
+            setupDB().then((database => {
+                    showSuccess()
+                    displayStatistics(database, sourceLanguage);
+                    resolve();
+                }
+            ));
+        });
+    });
+}
+
 export function updateToNextLesson(lessons) {
     let timeSpent = calculateTimeSpent();
     timerStart = null; // restart for each lesson
@@ -101,9 +116,7 @@ function calculateTimeSpent() {
 function updateDatabaseAndDisplay(completionLessonScoreInPercentage, timeSpent){
     return new Promise((resolve, reject) => {
         setupDB().then((database => {
-                registerBadge(database, 'Lesson_' + currentLesson);
                 registerLessonScore(database, completionLessonScoreInPercentage, currentLesson, timeSpent);
-                displayStatistics(database);
                 resolve();
             }
         ));

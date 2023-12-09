@@ -19,16 +19,23 @@
             <p class="lessonText">Traduisez le mot suivant : <strong><span id="currentWord"></span></strong></p>
             <input type="text" id="userLessonInput" placeholder="Entrez la traduction...">
             <span id="feedbackEmoji"></span>
-            <p><button id="changeWord" class="lessonQuizButton">Changer le mot</button></p>
+            <p><button id="changeWord" class="lessonQuizButton">Je ne sais pas</button></p>
             <p><button id="muteButton">Mute/Unmute</button></p>
+            <p><button id="displaySuccess" class="lessonSuccessButton">Mes succès</button></p>
         </div>
         <audio id="correctSound" src="../../../media/bonne-reponse.mp3" preload="auto"></audio>
         <audio id="wrongSound" src="../../../media/buzzer-or-wrong-answer-20582.mp3" preload="auto"></audio>
         <audio id="lessonCompletedSound" src="../../../media/victory.mp3" preload="auto"></audio>
-        <div id="badgeList">
-            <h3 class="badgeTitle">Liste des succès</h3>
-            <ul id="badgeListItems">
-            </ul>
+
+    </div>
+    <div id="myBadgeModal" class="modal">
+        <div class="modal-content">
+            <span class="closeBadgeModal">❌</span>
+            <div id="badgeList">
+                <h3 class="badgeTitle">Liste des succès</h3>
+                <ul id="badgeListItems">
+                </ul>
+            </div>
         </div>
     </div>
     <div id="myModal" class="modal">
@@ -38,7 +45,7 @@
             <p id="modalText2"></p>
         </div>
     </div>
-    <script type="module" src="../../../shared/js/quizInput.js" data-html-source="japLessonsIndex"></script>
+    <script type="module" src="../../../shared/js/quizInput.js" data-html-source="japanLessons"></script>
     <script type="module" src="../../../shared/js/indexedDB.js"></script>
 </body>
 
