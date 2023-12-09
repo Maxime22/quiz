@@ -181,6 +181,10 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
     display: none;
 }
 
+#myBadgeModal {
+    display: none;
+}
+
 .modal {
     position: fixed;
     top: 0;
@@ -195,8 +199,7 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
 
 .modal-content {
     background-color: #ffffff; /* Fond blanc */
-    width: 50%;
-    padding: 30px;
+    padding: 20px 10px;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Ombre légère */
     text-align: center;
@@ -206,7 +209,7 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
     transform: translate(-50%, -50%);
 }
 
-.closeModal {
+.closeModal, .closeBadgeModal {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -220,7 +223,6 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
 
 .bodyLessons {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
     margin: 0;
     display: flex;
     justify-content: center;
@@ -230,7 +232,7 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
     background-color: #ffffff;
     padding: 100px;
     border-radius: 10px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
     text-align: center;
 }
 
@@ -243,7 +245,6 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    width: 100%;
     margin-top: 20px;
     margin-bottom: 20px;
 }
@@ -262,11 +263,26 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
     cursor: pointer;
     border: none;
     border-radius: 6px;
-    margin-top: 60px;
+    margin-top: 90px;
     margin-bottom: 20px;
 }
 
-.badgeTitle {
+.lessonSuccessButton {
+    background-color: #006640;
+    color: white;
+    padding: 10px 10px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+#muteButton{
+    padding: 5px;
 }
 
 .badgeTitle {
@@ -307,8 +323,11 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
     margin-left: 20px;
 }
 
-.lessonScoreDisplayed {
+.lessonScoreAndTimeDisplayed{
     margin-left: 10px;
+}
+
+.lessonScoreDisplayed, .lessonTimeSpentDisplayed, .lessonScoreAndTimeDisplayed {
     font-size: 10px;
 }
 

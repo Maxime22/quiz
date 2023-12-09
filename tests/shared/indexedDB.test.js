@@ -1,5 +1,5 @@
 // https://dev.to/andyhaskell/testing-your-indexeddb-code-with-jest-2o17
-import {registerBadge, registerLessonScore, setupDB} from "../../src/shared/js/indexedDB";
+import {registerLessonScore, setupDB} from "../../src/shared/js/indexedDB";
 import "fake-indexeddb/auto";
 
 if (typeof structuredClone === 'undefined') {
@@ -41,26 +41,5 @@ describe('registerLessonScore', () => {
 
         // THEN
         expect(result).toBe('Lesson updated successfully');
-    });
-
-    it('should add new badge if data does not exist', async () => {
-        // GIVEN
-
-        // WHEN
-        const result = await registerBadge(database, "Lesson_1");
-
-        // THEN
-        expect(result).toBe('Badge added successfully');
-    });
-
-    it('should modify badge', async () => {
-        // GIVEN
-        await registerBadge(database, "Lesson_1");
-
-        // WHEN
-        const result = await registerBadge(database, "Lesson_1");
-
-        // THEN
-        expect(result).toBe('Badge updated successfully');
     });
 });
