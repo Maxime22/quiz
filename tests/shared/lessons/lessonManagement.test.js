@@ -1,4 +1,4 @@
-import { populateLessonDropdown} from "../../src/shared/js/lessonManagement.js";
+import { populateLessonDropdown} from "../../../src/shared/js/lessons/lessonManagement.js";
 describe('populateLessonDropdown', () => {
     // Mock du DOM
     document.body.innerHTML = `

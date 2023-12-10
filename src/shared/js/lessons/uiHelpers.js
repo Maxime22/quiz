@@ -1,5 +1,5 @@
-import {playSound} from "./soundManagement.js";
-import {showLessonCompletedModal} from "./modalManagement.js";
+import {playSound} from "./media/soundManagement.js";
+import {showLessonCompletedModal} from "./modal/modalManagement.js";
 import {displayNextWord} from "./lessonManagement.js";
 
 export function checkAnswer(lessons, wordsForCurrentLesson, currentWordIndex, currentLesson) {

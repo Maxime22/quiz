@@ -1,4 +1,4 @@
-import {sourceLanguage} from "./lessonsData.js";
+import {sourceLanguage} from "../lessonsData.js";
 
 const badgeStoreName = "newBadges"
 const indexedDBVersion = 3;

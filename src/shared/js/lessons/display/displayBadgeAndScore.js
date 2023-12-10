@@ -1,7 +1,7 @@
-import {getLessonsByLanguage} from "./indexedDB.js";
-import {japaneseBadges} from "./japaneseBadges.js";
-import {spanishBadges} from "./spanishBadges.js";
-import {calculateNumberOfWordsForALesson} from "./lessonsData.js";
+import {getLessonsByLanguage} from "../database/indexedDB.js";
+import {japaneseBadges} from "../../../../languages/js/japaneseBadges.js";
+import {spanishBadges} from "../../../../languages/js/spanishBadges.js";
+import {calculateNumberOfWordsForALesson} from "../lessonsData.js";
 
 let badges = [];
 

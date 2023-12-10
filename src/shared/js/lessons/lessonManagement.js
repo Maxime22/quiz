@@ -1,8 +1,8 @@
 import {checkAnswer, congratsUser} from "./uiHelpers.js";
-import {showSuccess, showWrongAnswerModal} from "./modalManagement.js";
+import {showSuccess, showWrongAnswerModal} from "./modal/modalManagement.js";
 import {lessons, sourceLanguage} from "./lessonsData.js";
-import {registerLessonScore, setupDB} from "./indexedDB.js";
-import {displayStatistics} from "./displayBadgeAndScore.js";
+import {registerLessonScore, setupDB} from "./database/indexedDB.js";
+import {displayStatistics} from "./display/displayBadgeAndScore.js";
 
 let currentLesson;
 let wordsForCurrentLesson = [];

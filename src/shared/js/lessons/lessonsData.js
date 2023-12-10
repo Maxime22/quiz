@@ -1,5 +1,5 @@
-import { japaneseWordsTradsAndLessons } from "../../languages/japanese/js/japaneseLesson.js";
-import { spanishWordsTradsAndLessons } from "../../languages/spanish/js/spanishLesson.js";
+import { japaneseWordsTradsAndLessons } from "../../../languages/japanese/js/japaneseLesson.js";
+import { spanishWordsTradsAndLessons } from "../../../languages/spanish/js/spanishLesson.js";
 
 let lessons = [];
 let source = "";

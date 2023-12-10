@@ -1,5 +1,5 @@
 // https://dev.to/andyhaskell/testing-your-indexeddb-code-with-jest-2o17
-import {registerLessonScore, setupDB} from "../../src/shared/js/indexedDB";
+import {registerLessonScore, setupDB} from "../../../../src/shared/js/lessons/database/indexedDB";
 import "fake-indexeddb/auto";
 
 if (typeof structuredClone === 'undefined') {
