@@ -12,11 +12,66 @@ describe('registerLessonScore', () => {
     let database;
     // Mock de votre IndexedDB ou de l'objet lessonStore
     beforeEach(async () => {
-        database = await setupDB();
+        // Créer un identifiant unique pour chaque test
+        const uniqueDBName = "TestDB_" + Date.now();
+        database = await setupDB(uniqueDBName);
     });
 
     afterEach(() => {
         database.close();
+        // Effacer la base de données après chaque test
+        indexedDB.deleteDatabase(database.name);
+    });
+
+    it('should correctly store data in database when adding new lesson', async () => {
+        // GIVEN
+        const lessonScore = 80;
+        const lessonNumber = 1;
+        const timeSpent = 120;
+
+        // WHEN
+        await registerLessonScore(database, lessonScore, lessonNumber, timeSpent);
+
+        // THEN
+        const transaction = database.transaction(["lessons"], "readonly");
+        const lessonStore = transaction.objectStore("lessons");
+        const lessonIndex = lessonStore.index('lessonNumber');
+        const getLesson = lessonIndex.get(lessonNumber);
+
+        return new Promise((resolve, reject) => {
+            getLesson.onsuccess = function(e) {
+                const data = e.target.result;
+                try {
+                    expect(data).toBeDefined();
+                    expect(data.lessonNumber).toBe(lessonNumber);
+                    expect(data.score).toBe(lessonScore);
+                    expect(data.timeSpent).toBe(timeSpent);
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            };
+
+            getLesson.onerror = function(error) {
+                reject(error);
+            };
+        });
+    });
+
+    it('should handle error when database operation fails', async () => {
+        // GIVEN
+        const lessonScore = 80;
+        const lessonNumber = 1;
+        const timeSpent = 120;
+
+        // Mocking database transaction to simulate failure
+        database.transaction = jest.fn().mockImplementation(() => {
+            throw new Error("Database error");
+        });
+
+        // WHEN & THEN
+        await expect(registerLessonScore(database, lessonScore, lessonNumber, timeSpent))
+            .rejects.toThrow("Database error");
     });
 
     it('should add new lesson if data does not exist', async () => {
@@ -41,5 +96,40 @@ describe('registerLessonScore', () => {
 
         // THEN
         expect(result).toBe('Lesson updated successfully');
+    });
+
+    it('should not update lesson if new score is lower', async () => {
+        // GIVEN
+        const initialScore = 85;
+        const newScore = 80; // lower than initialScore
+        const lessonNumber = 1;
+        const timeSpent = 120;
+        await registerLessonScore(database, initialScore, lessonNumber, timeSpent);
+
+        // WHEN
+        await registerLessonScore(database, newScore, lessonNumber, timeSpent);
+
+        // THEN
+        const transaction = database.transaction(["lessons"], "readonly");
+        const lessonStore = transaction.objectStore("lessons");
+        const lessonIndex = lessonStore.index('lessonNumber');
+        const getLesson = lessonIndex.get(lessonNumber);
+
+        return new Promise((resolve, reject) => {
+            getLesson.onsuccess = function(e) {
+                const data = e.target.result;
+                try {
+                    expect(data).toBeDefined();
+                    expect(data.score).not.toBe(newScore); // Should still be the initialScore
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            };
+
+            getLesson.onerror = function(error) {
+                reject(error);
+            };
+        });
     });
 });

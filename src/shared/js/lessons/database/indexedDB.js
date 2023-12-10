@@ -7,9 +7,9 @@ window.onload = function () {
     const firstPromise = setupDB();
 }
 
-export function setupDB() {
+export function setupDB(databaseName = "QuizBDD") {
     return new Promise((resolve, reject) => {
-        let request = indexedDB.open("QuizBDD", indexedDBVersion);
+        let request = indexedDB.open(databaseName, indexedDBVersion);
         // FOR DEV PURPOSE
         // indexedDB.deleteDatabase("QuizBDD")
 
@@ -165,7 +165,7 @@ export function registerLessonScore(database, lessonScore, lessonNumber, timeSpe
         };
 
         getLesson.onerror = function (e) {
-            reject("Error in getting lesson: " + e.target.errorCode);
+            reject("Error in getting lesson: " + e.target.error);
         };
     });
 }
@@ -181,7 +181,7 @@ function updateLessonStore(lessonStore, data) {
         };
 
         request.onerror = function (e) {
-            reject(e.target.errorCode);
+            reject(e.target.error);
         };
     });
 }
@@ -203,8 +203,7 @@ function addNewLesson(lessonStore, lessonNumber, lessonScore, timeSpent, languag
         };
 
         request.onerror = function (e) {
-            console.log(e.target.error)
-            reject(e.target.errorCode);
+            reject(e.target.error);
         };
     });
 }
