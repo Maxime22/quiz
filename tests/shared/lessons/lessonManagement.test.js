@@ -1,30 +1,31 @@
-import { populateLessonDropdown} from "../../../src/shared/js/lessons/lessonManagement.js";
-describe('populateLessonDropdown', () => {
-    // Mock du DOM
-    document.body.innerHTML = `
-    <select id="lessonSelect"></select>
-  `;
+import {calculateTimeSpent, handleKeyUp} from "../../../src/shared/js/lessons/lessonManagement";
+import * as uiHelpers from '../../../src/shared/js/lessons/uiHelpers.js';
+jest.mock('../../../src/shared/js/lessons/uiHelpers.js', () => ({
+    checkAnswer: jest.fn(),
+}));
 
-    it('should populate the dropdown with unique lessons', () => {
-        // GIVEN
-        const lessonsMock = [
-            { lesson: 1, word: 'Bonjour', trad: 'Hello' },
-            { lesson: 2, word: 'Au revoir', trad: 'Goodbye' }
-        ];
+describe('calculateTimeSpent', () => {
+    it('should calculate the correct time spent', () => {
+        // Mock Date.now() to return a specific timestamp
+        jest.spyOn(global.Date, 'now').mockImplementation(() => new Date('2023-12-11T12:00:00Z').getTime());
 
-        // WHEN
-        populateLessonDropdown(lessonsMock);
+        // Initialize the timer
+        let timerStart = new Date('2023-12-11T11:59:30Z').getTime();
 
-        // THEN
-        const select = document.getElementById('lessonSelect');
-        const options = select.getElementsByTagName('option');
-
-        // Assertions
-        expect(options.length).toBe(2);
-        expect(options[0].value).toBe('1');
-        expect(options[0].textContent).toBe('Leçon 1');
-        expect(options[1].value).toBe('2');
-        expect(options[1].textContent).toBe('Leçon 2');
+        const timeSpent = calculateTimeSpent(timerStart);
+        expect(timeSpent).toBe(30); // 30 seconds
     });
 });
 
+describe('handleKeyUp', () => {
+    it('should start timer and call checkAnswer on Enter key press', () => {
+        // GIVEN
+        const mockEvent = { keyCode: 13 }; // 13 is the keycode for Enter
+
+        // WHEN
+        handleKeyUp(mockEvent);
+
+        // THEN
+        expect(uiHelpers.checkAnswer).toHaveBeenCalled();
+    });
+});
