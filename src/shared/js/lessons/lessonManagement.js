@@ -36,25 +36,51 @@ export function populateLessonDropdown(lessons) {
     });
 }
 
-export function chooseLesson(lessons, lesson = null) {
+export function updateToNextLesson(lessons) {
+    let timeSpent = calculateTimeSpent(timerStart);
+    timerStart = null; // restart for each lesson
+    let completionLessonScoreInPercentage = calculateScoreInPercentage();
+    updateDatabaseAndDisplay(completionLessonScoreInPercentage, timeSpent).then(() => {
+            let wordsForNewLesson = updateCurrentLesson()
+            reinitializeUnknownWords()
+            updateLessonInSelectDropdown(currentLesson)
+            displayNextWord(lessons, wordsForNewLesson, currentLesson)
+        }
+    )
+}
+
+export function updateCurrentLesson(lesson = null) {
+    if (lesson !== null) {
+        currentLesson = lesson
+    } else {
+        currentLesson++
+    }
+    let wordsForCurrentLesson = updateAllWordForCurrentLesson(currentLesson)
+    if (checkIfLessonIsEmpty()) {
+        updateCurrentLesson()
+    }
+    return wordsForCurrentLesson
+}
+
+export function updateLessonInSelectDropdown(lesson) {
     const selectElement = document.getElementById('lessonSelect');
     if (selectElement) {
-        if (lesson) {
-            currentLesson = lesson;
-            selectElement.value = currentLesson;
-        } else {
-            currentLesson = parseInt(selectElement.value);
-        }
+        selectElement.value = lesson
     }
-    wordsForCurrentLesson = lessons.filter(word => parseInt(word.lesson) === currentLesson);
+}
+
+export function updateAllWordForCurrentLesson(currentLesson) {
+    wordsForCurrentLesson = lessons.filter(word => parseInt(word.lesson) === parseInt(currentLesson));
     totalCountOfWordsForCurrentLesson = wordsForCurrentLesson.length;
-    if(totalCountOfWordsForCurrentLesson === 0){
-        chooseLesson(lessons ,currentLesson + 1)
-        return;
-    }
+    return wordsForCurrentLesson
+}
+
+function checkIfLessonIsEmpty() {
+    return totalCountOfWordsForCurrentLesson === 0;
+}
+
+export function reinitializeUnknownWords() {
     unknownWordsForCurrentLesson = [];
-    document.getElementById('quizArea').style.display = "block";
-    displayNextWord(lessons, wordsForCurrentLesson, currentLesson);
 }
 
 export function displayNextWord(lessons, wordsForCurrentLesson, currentLesson) {
@@ -65,7 +91,10 @@ export function displayNextWord(lessons, wordsForCurrentLesson, currentLesson) {
     }
     const wordObj = getRandomWord(wordsForCurrentLesson, currentLesson, lastWordDisplayed);
     if (!wordObj) return;
-    document.getElementById('currentWord').textContent = wordObj.word;
+    let currentWordSpan = document.getElementById('currentWord')
+    if (currentWordSpan) {
+        currentWordSpan.textContent = wordObj.word;
+    }
     lastWordDisplayed = wordObj;
     currentWordIndex = wordsForCurrentLesson.indexOf(wordObj);
 }
@@ -94,17 +123,7 @@ if (displaySuccessButton) {
     });
 }
 
-export function updateToNextLesson(lessons) {
-    let timeSpent = calculateTimeSpent();
-    timerStart = null; // restart for each lesson
-    let completionLessonScoreInPercentage = calculateScoreInPercentage();
-    document.getElementById('quizArea').style.display = "none";
-    updateDatabaseAndDisplay(completionLessonScoreInPercentage, timeSpent).then(() =>
-        chooseLesson(lessons, currentLesson + 1)
-    )
-}
-
-function calculateTimeSpent() {
+export function calculateTimeSpent(timerStart = null) {
     if (timerStart) {
         let endTime = Date.now();
         let timeSpent = ((endTime - timerStart) / 1000).toFixed(2); // Temps en secondes avec 2 décimales
@@ -113,7 +132,7 @@ function calculateTimeSpent() {
     return 0;
 }
 
-function updateDatabaseAndDisplay(completionLessonScoreInPercentage, timeSpent){
+function updateDatabaseAndDisplay(completionLessonScoreInPercentage, timeSpent) {
     return new Promise((resolve, reject) => {
         setupDB().then((database => {
                 registerLessonScore(database, completionLessonScoreInPercentage, currentLesson, timeSpent, sourceLanguage);
@@ -127,7 +146,6 @@ export function getRandomWord(wordsForCurrentLesson, currentLesson, lastWordDisp
     if (wordsForCurrentLesson.length === 1) {
         return wordsForCurrentLesson[0];
     }
-
     let wordObj;
     do {
         const randomIndex = Math.floor(Math.random() * wordsForCurrentLesson.length);
