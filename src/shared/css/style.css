@@ -186,7 +186,7 @@ body.bodyspanish div.wrapper div.responses div.response:hover {
 }
 
 .modal {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
