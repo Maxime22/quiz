@@ -102,7 +102,7 @@ function createStarElement(score, timeSpent, numberOfWordsInTheLesson) {
 
     let starCount = calculateStars(score);
 
-    if(starCount > 2 && (timeSpent === "??" || (numberOfWordsInTheLesson * 3 < timeSpent))){
+    if(starCount === 5 && (timeSpent === "??" || (numberOfWordsInTheLesson * 3 < timeSpent))){
         starCount--
     }
 
