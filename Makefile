@@ -11,3 +11,6 @@ test:
 # Dans docker-compose run pas besoin de -it
 shell:
 	docker-compose run --rm app /bin/sh
+
+prettier:
+	docker-compose run --rm app npx prettier . --write

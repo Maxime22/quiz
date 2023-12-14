@@ -1,52 +1,81 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../../shared/css/style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../../../shared/css/style.css" />
     <title>Choix de la leçon de Japonais</title>
-</head>
+  </head>
 
-<body class="bodyLessons">
+  <body class="bodyLessons">
     <div id="quizContainer">
-        <h1>Leçon Quiz</h1>
-        <p class="lessonText">Sélectionnez une leçon :</p>
-        <select id="lessonSelect">
-        </select>
+      <h1>Leçon Quiz</h1>
+      <p class="lessonText">Sélectionnez une leçon :</p>
+      <select id="lessonSelect"></select>
 
-        <div id="quizArea">
-            <p class="lessonText">Traduisez le mot suivant : <strong><span id="currentWord"></span></strong></p>
-            <input type="text" id="userLessonInput" placeholder="Entrez la traduction...">
-            <div><span id="feedbackEmoji"></span></div>
-            <p><button id="changeWord" class="lessonQuizButton">Je ne sais pas</button></p>
-            <p><button id="muteButton">Mute/Unmute</button></p>
-            <p><button id="displaySuccess" class="lessonSuccessButton">Mes succès</button></p>
-        </div>
-        <audio id="correctSound" src="../../../media/bonne-reponse.mp3" preload="auto"></audio>
-        <audio id="wrongSound" src="../../../media/buzzer-or-wrong-answer-20582.mp3" preload="auto"></audio>
-        <audio id="lessonCompletedSound" src="../../../media/victory.mp3" preload="auto"></audio>
-
+      <div id="quizArea">
+        <p class="lessonText">
+          Traduisez le mot suivant :
+          <strong><span id="currentWord"></span></strong>
+        </p>
+        <input
+          type="text"
+          id="userLessonInput"
+          placeholder="Entrez la traduction..."
+        />
+        <div><span id="feedbackEmoji"></span></div>
+        <p>
+          <button id="changeWord" class="lessonQuizButton">
+            Je ne sais pas
+          </button>
+        </p>
+        <p><button id="muteButton">Mute/Unmute</button></p>
+        <p>
+          <button id="displaySuccess" class="lessonSuccessButton">
+            Mes succès
+          </button>
+        </p>
+      </div>
+      <audio
+        id="correctSound"
+        src="../../../media/bonne-reponse.mp3"
+        preload="auto"
+      ></audio>
+      <audio
+        id="wrongSound"
+        src="../../../media/buzzer-or-wrong-answer-20582.mp3"
+        preload="auto"
+      ></audio>
+      <audio
+        id="lessonCompletedSound"
+        src="../../../media/victory.mp3"
+        preload="auto"
+      ></audio>
     </div>
     <div id="myBadgeModal" class="modal">
-        <div class="badge-modal-content">
-            <span class="closeBadgeModal">❌</span>
-            <div id="badgeList">
-                <h3 class="badgeTitle">Liste des succès</h3>
-                <ul id="badgeListItems">
-                </ul>
-            </div>
+      <div class="badge-modal-content">
+        <span class="closeBadgeModal">❌</span>
+        <div id="badgeList">
+          <h3 class="badgeTitle">Liste des succès</h3>
+          <ul id="badgeListItems"></ul>
         </div>
+      </div>
     </div>
     <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="closeModal">❌</span>
-            <p id="modalText1"></p>
-            <p id="modalText2"></p>
-        </div>
+      <div class="modal-content">
+        <span class="closeModal">❌</span>
+        <p id="modalText1"></p>
+        <p id="modalText2"></p>
+      </div>
     </div>
-    <script type="module" src="../../../shared/js/lessons/quizInput.js" data-html-source="japanLessons"></script>
-    <script type="module" src="../../../shared/js/lessons/database/indexedDB.js"></script>
-</body>
-
+    <script
+      type="module"
+      src="../../../shared/js/lessons/quizInput.js"
+      data-html-source="japanLessons"
+    ></script>
+    <script
+      type="module"
+      src="../../../shared/js/lessons/database/indexedDB.js"
+    ></script>
+  </body>
 </html>

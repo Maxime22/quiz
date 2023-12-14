@@ -11,7 +11,8 @@
     "@babel/core": "^7.23.5",
     "@babel/preset-env": "^7.23.5",
     "babel-jest": "^29.7.0",
-    "fake-indexeddb": "5.0.1"
+    "fake-indexeddb": "5.0.1",
+    "prettier": "^3.1.1"
   },
   "jest": {
     "testEnvironment": "jsdom"

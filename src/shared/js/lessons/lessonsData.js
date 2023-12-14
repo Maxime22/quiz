@@ -7,11 +7,11 @@ let sourceLanguage = "";
 let scriptElement = document.querySelector('script[src*="quizInput.js"]');
 
 if (scriptElement) {
-    source = scriptElement.getAttribute('data-html-source');
+  source = scriptElement.getAttribute("data-html-source");
 }
 if (source === "japanLessons") {
-    lessons = [...japaneseWordsTradsAndLessons];
-    sourceLanguage = "ja_JP"
+  lessons = [...japaneseWordsTradsAndLessons];
+  sourceLanguage = "ja_JP";
 }
 if (source === "spanishLessons") {
     lessons = spanishWordsTradsAndLessons.sort(compareLessons);
@@ -24,7 +24,9 @@ function compareLessons(a, b) {
 
 export { lessons, sourceLanguage };
 
-export function calculateNumberOfWordsForALesson(lessonNumber){
-    let wordsForLessonNumber = [...japaneseWordsTradsAndLessons].filter(word => parseInt(word.lesson) === lessonNumber);
-    return wordsForLessonNumber.length
+export function calculateNumberOfWordsForALesson(lessonNumber) {
+  let wordsForLessonNumber = [...japaneseWordsTradsAndLessons].filter(
+    (word) => parseInt(word.lesson) === lessonNumber,
+  );
+  return wordsForLessonNumber.length;
 }
