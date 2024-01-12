@@ -3,7 +3,7 @@ import { showLessonCompletedModal } from "./modal/modalManagement.js";
 import {
   displayNextWord,
   reinitializeUnknownWords,
-  updateCurrentLesson,
+  updateToNextLesson,
   updateLessonInSelectDropdown,
 } from "./lessonManagement.js";
 
@@ -47,7 +47,7 @@ export function congratsUser(currentLesson) {
 }
 
 export function updateUI(lessons, currentLesson) {
-  let wordsForNewLesson = updateCurrentLesson();
+  let wordsForNewLesson = updateToNextLesson();
   reinitializeUnknownWords();
   updateLessonInSelectDropdown(currentLesson);
   displayNextWord(lessons, wordsForNewLesson, currentLesson);
