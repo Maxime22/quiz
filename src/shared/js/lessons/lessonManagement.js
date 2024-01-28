@@ -101,6 +101,7 @@ export function displayNextWord(lessons, wordsForCurrentLesson, currentLesson) {
         thisModule.updateCurrentLesson(lessons, currentLesson);
         return;
     }
+    // TODO
     const wordObj = getRandomWord(
         wordsForCurrentLesson,
         currentLesson,
