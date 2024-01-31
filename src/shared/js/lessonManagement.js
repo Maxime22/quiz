@@ -116,7 +116,7 @@ function calculateTimeSpent() {
 function updateDatabaseAndDisplay(completionLessonScoreInPercentage, timeSpent){
     return new Promise((resolve, reject) => {
         setupDB().then((database => {
-                registerLessonScore(database, completionLessonScoreInPercentage, currentLesson, timeSpent);
+                registerLessonScore(database, completionLessonScoreInPercentage, currentLesson, timeSpent, sourceLanguage);
                 resolve();
             }
         ));

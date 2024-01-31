@@ -1,4 +1,5 @@
 import { japaneseWordsTradsAndLessons } from "../../languages/japanese/js/japaneseLesson.js";
+import { spanishWordsTradsAndLessons } from "../../languages/spanish/js/spanishLesson.js";
 
 let lessons = [];
 let source = "";
@@ -11,6 +12,14 @@ if (scriptElement) {
 if (source === "japanLessons") {
     lessons = [...japaneseWordsTradsAndLessons];
     sourceLanguage = "ja_JP"
+}
+if (source === "spanishLessons") {
+    lessons = spanishWordsTradsAndLessons.sort(compareLessons);
+    sourceLanguage = "es_ES"
+}
+
+function compareLessons(a, b) {
+    return a.lesson - b.lesson;
 }
 
 export { lessons, sourceLanguage };

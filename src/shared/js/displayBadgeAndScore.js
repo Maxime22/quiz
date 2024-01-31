@@ -1,13 +1,17 @@
-import {getLessons} from "./indexedDB.js";
+import {getLessonsByLanguage} from "./indexedDB.js";
 import {japaneseBadges} from "./japaneseBadges.js";
+import {spanishBadges} from "./spanishBadges.js";
 import {calculateNumberOfWordsForALesson} from "./lessonsData.js";
 
 let badges = [];
 
-export function displayStatistics(database, sourceLanguage = "ja_JP") {
-    getLessons(database).then(lessons => {
+export function displayStatistics(database, sourceLanguage = "") {
+    getLessonsByLanguage(database, sourceLanguage).then(lessons => {
         if (sourceLanguage === "ja_JP") {
             badges = japaneseBadges
+        }
+        if (sourceLanguage === "es_ES") {
+            badges = spanishBadges
         }
         displayBadges(createLessonsMap(lessons, sourceLanguage), badges)
     }).catch(error => {
@@ -18,13 +22,15 @@ export function displayStatistics(database, sourceLanguage = "ja_JP") {
 function createLessonsMap(lessons, sourceLanguage) {
     const lessonsMap = new Map();
     lessons.forEach(lesson => {
-        lessonsMap.set(lesson.lessonNumber,
-            {
-                score: lesson.score,
-                timeSpent: lesson.timeSpent,
-                language: lesson.language ? lesson.language : sourceLanguage,
-                numberOfLessonCompletion: lesson.numberOfLessonCompletion ? lesson.numberOfLessonCompletion : 1,
-            });
+        if(lesson.language && lesson.language === sourceLanguage){
+            lessonsMap.set(lesson.lessonNumber,
+                {
+                    score: lesson.score,
+                    timeSpent: lesson.timeSpent,
+                    language: lesson.language,
+                    numberOfLessonCompletion: lesson.numberOfLessonCompletion ? lesson.numberOfLessonCompletion : 1,
+                });
+        }
     });
     return lessonsMap;
 }
