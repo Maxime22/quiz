@@ -3,9 +3,9 @@ import { showLessonCompletedModal } from "./modal/modalManagement.js";
 import {
   displayNextWord,
   reinitializeUnknownWords,
-  updateToNextLesson,
-  updateLessonInSelectDropdown,
+  updateToNextLesson
 } from "./lessonManagement.js";
+import { updateLessonInSelectDropdown } from "./dropdownManagement.js";
 
 export function checkAnswer(
   lessons,

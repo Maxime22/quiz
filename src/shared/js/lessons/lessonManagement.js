@@ -26,13 +26,15 @@ export function initializeLessonManagementGlobalState(
     initialLessons = lessons,
     totalCountOfWordsForCurrentLesson = 0,
     initialSourceLanguage = sourceLanguage,
-    initialLastWordDisplayed = null
+    initialLastWordDisplayed = null,
+    initialWordsForCurrentLesson = []
 ) {
     globalState.currentLesson = initialLesson;
     globalState.lessons = initialLessons;
     globalState.totalCountOfWordsForCurrentLesson = totalCountOfWordsForCurrentLesson;
     globalState.sourceLanguage = initialSourceLanguage;
     globalState.lastWordDisplayed = initialLastWordDisplayed;
+    globalState.wordsForCurrentLesson = initialWordsForCurrentLesson;
 }
 
 export function handleKeyUp(event) {
@@ -43,7 +45,7 @@ export function handleKeyUp(event) {
         }
         checkAnswer(
             globalState.lessons,
-            wordsForCurrentLesson,
+            globalState.wordsForCurrentLesson,
             currentWordIndex,
             globalState.currentLesson,
             globalState.lastWordDisplayed,
@@ -78,7 +80,6 @@ export function updateToNextLesson(lesson = null) {
         globalState.currentLesson++;
     }
     let wordsForCurrentLesson = updateAllWordsForCurrentLesson(globalState.currentLesson, globalState.lessons);
-
     if (wordsForCurrentLesson !== undefined) {
         globalState.totalCountOfWordsForCurrentLesson = wordsForCurrentLesson.length;
     } else {
@@ -88,6 +89,7 @@ export function updateToNextLesson(lesson = null) {
     if (globalState.totalCountOfWordsForCurrentLesson === 0) {
         wordsForCurrentLesson = updateToNextLesson();
     }
+    globalState.wordsForCurrentLesson = wordsForCurrentLesson
     return wordsForCurrentLesson;
 }
 
@@ -118,12 +120,12 @@ export function displayNextWord(lessons, wordsForCurrentLesson, currentLesson) {
 
 if (changeWordButton) {
     changeWordButton.addEventListener("click", (event) => {
-        let unknownWord = wordsForCurrentLesson[currentWordIndex].trad;
+        let unknownWord = globalState.wordsForCurrentLesson[currentWordIndex].trad;
         if (unknownWordsForCurrentLesson.indexOf(unknownWord) === -1) {
             unknownWordsForCurrentLesson.push(unknownWord);
         }
-        showWrongAnswerModal(wordsForCurrentLesson, currentWordIndex);
-        displayNextWord(globalState.lessons, wordsForCurrentLesson, currentLesson);
+        showWrongAnswerModal(globalState.wordsForCurrentLesson, currentWordIndex);
+        displayNextWord(globalState.lessons, globalState.wordsForCurrentLesson, globalState.currentLesson);
     });
 }
 
