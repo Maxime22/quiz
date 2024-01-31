@@ -1,7 +1,7 @@
 import {sourceLanguage} from "./lessonsData.js";
 
 const badgeStoreName = "newBadges"
-const indexedDBVersion = 2;
+const indexedDBVersion = 3;
 
 window.onload = function () {
     const firstPromise = setupDB();
@@ -60,6 +60,17 @@ export function setupDB() {
                 }
             }
 
+            if (oldDatabaseVersion < 4) {
+                if (database.objectStoreNames.contains("lessons")) {
+                    let lessonStore = event.target.transaction.objectStore("lessons");
+                    // Supprimer l'ancien index
+                    lessonStore.deleteIndex("lessonNumber");
+                    // Créer un nouvel index sans la contrainte unique
+                    lessonStore.createIndex("lessonNumber", "lessonNumber", {unique: false});
+                    lessonStore.createIndex("language", "language");
+                }
+            }
+
             transaction.onerror = function (event) {
                 console.error("Erreur de transaction:", event.target.error);
             };
@@ -79,13 +90,14 @@ export function setupDB() {
     });
 }
 
-export function getLessons(database) {
+export function getLessonsByLanguage(database, language) {
     return new Promise((resolve, reject) => {
         const transaction = database.transaction(["lessons"], "readonly");
         const lessonStore = transaction.objectStore("lessons");
-        let getAllLessons = lessonStore.getAll();
-        getAllLessons.onsuccess = e => resolve(e.target.result);
-        getAllLessons.onerror = e => reject("Erreur lors de la récupération des leçons");
+        const languageIndex = lessonStore.index("language");
+        let getLanguageLessons = languageIndex.getAll(language);
+        getLanguageLessons.onsuccess = e => resolve(e.target.result);
+        getLanguageLessons.onerror = e => reject("Erreur lors de la récupération des leçons par leur langue");
     })
 }
 
@@ -112,7 +124,7 @@ export function getBadgesData(database) {
     });
 }
 
-export function registerLessonScore(database, lessonScore, lessonNumber, timeSpent) {
+export function registerLessonScore(database, lessonScore, lessonNumber, timeSpent, sourceLanguage) {
     return new Promise((resolve, reject) => {
         let transaction = database.transaction(["lessons"], "readwrite");
         let lessonStore = transaction.objectStore("lessons");
@@ -123,7 +135,7 @@ export function registerLessonScore(database, lessonScore, lessonNumber, timeSpe
         getLesson.onsuccess = function (e) {
             let data = e.target.result;
 
-            if (data) {
+            if (data && data.language === sourceLanguage) {
                 if(data.numberOfLessonCompletion){
                     data.numberOfLessonCompletion++;
                 } else {
@@ -191,6 +203,7 @@ function addNewLesson(lessonStore, lessonNumber, lessonScore, timeSpent, languag
         };
 
         request.onerror = function (e) {
+            console.log(e.target.error)
             reject(e.target.errorCode);
         };
     });
