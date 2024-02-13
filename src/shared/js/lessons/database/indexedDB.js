@@ -1,4 +1,6 @@
 import {sourceLanguage} from "../lessonsData.js";
+import { v4 as uuidv4 } from 'uuid';
+
 
 const badgeStoreName = "newBadges"
 const indexedDBVersion = 3;
@@ -111,30 +113,30 @@ export function getLessonsByLanguage(database, language) {
     })
 }
 
-export function getBadgesData(database) {
-    return new Promise((resolve, reject) => {
-        let transaction = database.transaction([badgeStoreName], "readonly");
-        let badgeStore = transaction.objectStore(badgeStoreName);
-        let getAllBadges = badgeStore.getAll();
+// export function getBadgesData(database) {
+//     return new Promise((resolve, reject) => {
+//         let transaction = database.transaction([badgeStoreName], "readonly");
+//         let badgeStore = transaction.objectStore(badgeStoreName);
+//         let getAllBadges = badgeStore.getAll();
+//
+//         getAllBadges.onsuccess = function (e) {
+//             let badges = e.target.result;
+//             // Tri des badges par numéro de leçon
+//             badges.sort((a, b) => {
+//                 let numberA = parseInt(a.badgeName.match(/\d+/)[0]);
+//                 let numberB = parseInt(b.badgeName.match(/\d+/)[0]);
+//                 return numberA - numberB;
+//             });
+//             resolve(badges);
+//         };
+//
+//         getAllBadges.onerror = function () {
+//             reject("Erreur lors de la récupération des badges");
+//         };
+//     });
+// }
 
-        getAllBadges.onsuccess = function (e) {
-            let badges = e.target.result;
-            // Tri des badges par numéro de leçon
-            badges.sort((a, b) => {
-                let numberA = parseInt(a.badgeName.match(/\d+/)[0]);
-                let numberB = parseInt(b.badgeName.match(/\d+/)[0]);
-                return numberA - numberB;
-            });
-            resolve(badges);
-        };
-
-        getAllBadges.onerror = function () {
-            reject("Erreur lors de la récupération des badges");
-        };
-    });
-}
-
-export function registerLessonScore(
+export function registerLesson(
     database,
     lessonScore,
     lessonNumber,
@@ -142,6 +144,16 @@ export function registerLessonScore(
     sourceLanguage
 ) {
     return new Promise((resolve, reject) => {
+        let invalidArgs = [];
+
+        if (lessonScore === undefined || typeof lessonScore !== 'number' || lessonScore < 0) invalidArgs.push("lessonScore");
+        if (lessonNumber === undefined || typeof lessonNumber !== 'number' || lessonNumber <= 0) invalidArgs.push("lessonNumber");
+        if (timeSpent === undefined || typeof timeSpent !== 'number' || timeSpent < 0) invalidArgs.push("timeSpent");
+        if (sourceLanguage === undefined || typeof sourceLanguage !== 'string' || !sourceLanguage.match(/^[a-z]{2}_[A-Z]{2}$/)) invalidArgs.push("sourceLanguage");
+        if (invalidArgs.length > 0) {
+            throw new Error(`Invalid or missing argument(s): ${invalidArgs.join(", ")}`);
+        }
+
         let transaction = database.transaction(["lessons"], "readwrite");
         let lessonStore = transaction.objectStore("lessons");
         let lessonIndex = lessonStore.index("lessonNumber");
@@ -226,7 +238,7 @@ function addNewLesson(
     return new Promise((resolve, reject) => {
         // Suppose lessonStore.add returns a request object
         let request = lessonStore.add({
-            lessonId: "Lesson_" + lessonNumber + "_" + Date.now(),
+            lessonId: "Lesson_" + lessonNumber + "_" + uuidv4(),
             lessonNumber: lessonNumber,
             score: lessonScore,
             timeSpent: timeSpent,
@@ -252,7 +264,7 @@ export function updateDatabaseAndDisplay(
     return new Promise((resolve, reject) => {
         setupDB()
             .then((database) => {
-                registerLessonScore(
+                registerLesson(
                     database,
                     completionLessonScoreInPercentage,
                     currentLesson,
