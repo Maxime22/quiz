@@ -1,13 +1,10 @@
-let modal = document.getElementById("myModal");
-let badgeModal = document.getElementById("myBadgeModal");
 // Récupérez l'élément <span> qui permet de fermer la modale
 let closeModal = document.getElementsByClassName("closeModal")[0];
 let closeBadgeModal = document.getElementsByClassName("closeBadgeModal")[0];
-let modalText1 = document.getElementById("modalText1");
 
 export function showWrongAnswerModal(wordsForCurrentLesson, currentWordIndex) {
-  modal.style.display = "block";
-  modalText1.textContent =
+  document.getElementById("myModal").style.display = "block";
+  document.getElementById("modalText1").textContent =
     "La réponse pour " +
     wordsForCurrentLesson[currentWordIndex].word +
     " était : " +
@@ -16,33 +13,33 @@ export function showWrongAnswerModal(wordsForCurrentLesson, currentWordIndex) {
 }
 
 export function showLessonCompletedModal(currentLesson) {
-  modal.style.display = "block";
-  modalText1.textContent =
+  document.getElementById("myModal").style.display = "block";
+  document.getElementById("modalText1").textContent =
     "✨ Félicitations ! ✨ Vous avez terminé la leçon " +
     currentLesson +
     "! 😃";
 }
 
-export function showSuccess(currentLesson) {
-  badgeModal.style.display = "block";
+export function showSuccess() {
+  document.getElementById("myBadgeModal").style.display = "block";
 }
 
 if (closeModal) {
   closeModal.onclick = function () {
-    hideModal();
+    hideModal(document.getElementById("myModal"));
   };
 }
 
 if (closeBadgeModal) {
   closeBadgeModal.onclick = function () {
-    hideBadgeModal();
+    hideBadgeModal(document.getElementById("myBadgeModal"));
   };
 }
 
-function hideModal() {
+export function hideModal(modal) {
   modal.style.display = "none";
 }
 
-function hideBadgeModal() {
+export function hideBadgeModal(badgeModal) {
   badgeModal.style.display = "none";
 }
