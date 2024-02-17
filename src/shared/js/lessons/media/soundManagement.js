@@ -4,16 +4,20 @@ export function playSound(id) {
   audio.play();
 }
 
+export function toggleMute(muteButton) {
+  const mediaElements = document.querySelectorAll("audio, video");
+  const isMuted = mediaElements[0] && mediaElements[0].muted;
+
+  mediaElements.forEach((media) => {
+    media.muted = !isMuted;
+  });
+
+  muteButton.textContent = isMuted ? "Mute" : "Unmute";
+}
+
 const muteButton = document.getElementById("muteButton");
 if (muteButton) {
-  muteButton.addEventListener("click", function () {
-    const mediaElements = document.querySelectorAll("audio, video");
-    const isMuted = mediaElements[0] && mediaElements[0].muted;
-
-    mediaElements.forEach((media) => {
-      media.muted = !isMuted;
-    });
-
-    this.textContent = isMuted ? "Mute" : "Unmute";
+  muteButton.addEventListener("click", function() {
+    toggleMute(muteButton);
   });
 }
