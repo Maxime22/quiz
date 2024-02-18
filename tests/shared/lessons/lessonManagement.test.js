@@ -184,6 +184,13 @@ describe('updateToNextLesson', () => {
 describe('displayNextWord', () => {
     beforeEach(() => {
         jest.resetAllMocks();
+        // Active le mock seulement pour les tests dans ce describe
+        jest.spyOn(lessonManagement, 'getRandomWord').mockReturnValue({ word: "cherry", lesson: "1" });
+    });
+
+    afterEach(() => {
+        // Restaure l'implémentation originale après chaque test dans ce bloc
+        lessonManagement.getRandomWord.mockRestore();
     });
 
     it('should congrats user and go to next lesson if there are no words left', () => {
@@ -203,4 +210,97 @@ describe('displayNextWord', () => {
         expect(lessonManagement.updateCurrentLesson).toHaveBeenCalled();
     });
 
+    it('updates globalState with the last displayed word and its index', () => {
+        // GIVEN
+        const initialLessons = [{ word: 'apple', lesson: '1' }, { word: 'banana', lesson: '1' }, { word: 'cherry', lesson: '1' }];
+        const wordsForCurrentLesson = [...initialLessons];
+        const currentLesson = '1';
+        lessonManagement.initializeLessonManagementGlobalState(currentLesson, initialLessons);
+        document.getElementById = jest.fn().mockReturnValue({
+            textContent: ''
+        });
+
+        // WHEN
+        lessonManagement.displayNextWord(initialLessons, wordsForCurrentLesson, currentLesson);
+
+        // THEN
+        expect(document.getElementById).toHaveBeenCalledWith('currentWord');
+
+        expect(lessonManagement.globalState.lastWordDisplayed).toEqual({ word: 'cherry', lesson: '1' });
+        expect(lessonManagement.globalState.currentWordIndex).toBe(2);
+
+        const mockedElement = document.getElementById('currentWord');
+        expect(mockedElement.textContent).toBe('cherry');
+    });
+
+    it('exits early if getRandomWord returns no word object', () => {
+        // GIVEN
+        const initialLessons = [{ word: 'apple', lesson: '1' }, { word: 'banana', lesson: '1' }, { word: 'cherry', lesson: '1' }];
+        const wordsForCurrentLesson = [...initialLessons];
+        const currentLesson = '1';
+        lessonManagement.initializeLessonManagementGlobalState(currentLesson, initialLessons);
+        document.getElementById = jest.fn().mockReturnValue({ textContent: '' });
+        jest.spyOn(lessonManagement, 'getRandomWord').mockReturnValueOnce(undefined);
+
+        // WHEN
+        lessonManagement.displayNextWord(initialLessons, wordsForCurrentLesson, currentLesson);
+
+        // THEN
+        expect(document.getElementById).not.toHaveBeenCalled();
+        expect(lessonManagement.globalState.lastWordDisplayed).toBeNull();
+        expect(lessonManagement.globalState.currentWordIndex).toEqual(0);
+    });
+
+
+
+});
+
+describe('getRandomWord', () => {
+    it('returns the only word in the list if there is only one word', () => {
+        // GIVEN
+        const wordsForCurrentLesson = [{ word: "apple", lesson: "1" }];
+        const currentLesson = "1";
+        const lastWordDisplayed = null;
+
+        // WHEN
+        const wordObj = lessonManagement.getRandomWord(wordsForCurrentLesson, currentLesson, lastWordDisplayed);
+
+        // THEN
+        expect(wordObj).toEqual({ word: "apple", lesson: "1" });
+    });
+
+    it('returns a word different from the last word displayed', () => {
+        // GIVEN
+        const wordsForCurrentLesson = [
+            { word: "apple", lesson: "1" },
+            { word: "banana", lesson: "1" }
+        ];
+        const currentLesson = "1";
+        const lastWordDisplayed = { word: "apple", lesson: "1" };
+        jest.spyOn(Math, 'random').mockReturnValue(0.99); // sélectionne banana
+
+        // WHEN
+        const wordObj = lessonManagement.getRandomWord(wordsForCurrentLesson, currentLesson, lastWordDisplayed);
+
+        // THEN
+        expect(wordObj).toEqual({ word: "banana", lesson: "1" });
+    });
+
+    it('returns a random word from the list', () => {
+        // GIVEN
+        const wordsForCurrentLesson = [
+            { word: "apple", lesson: "1" },
+            { word: "banana", lesson: "1" },
+            { word: "cherry", lesson: "1" }
+        ];
+        const currentLesson = "1";
+        const lastWordDisplayed = { word: "banana", lesson: "1" };
+        jest.spyOn(Math, 'random').mockReturnValue(0.99); // Cela sélectionnera "cherry" dans cet exemple
+
+        // WHEN
+        const wordObj = lessonManagement.getRandomWord(wordsForCurrentLesson, currentLesson, lastWordDisplayed);
+
+        // THEN
+        expect(wordObj).toEqual({ word: "cherry", lesson: "1" });
+    });
 });

@@ -1,8 +1,28 @@
-import {getLessonsByLanguage} from "../database/indexedDB.js";
+import {getLessonsByLanguage, setupDB} from "../database/indexedDB.js";
 import {japaneseBadges} from "../../../../languages/japanese/js/japaneseBadges.js";
 import {spanishBadges} from "../../../../languages/spanish/js/spanishBadges.js";
-import {calculateNumberOfWordsForALesson, getLessonsFromSource} from "../lessonsData.js";
+import {
+    calculateNumberOfWordsForALesson,
+    getLessonsFromSource,
+    getScriptElementSource,
+    getSourceLanguageFromSource
+} from "../lessonsData.js";
 import * as thisModule from './displayBadgeAndScore.js';
+import {showSuccess} from "../modal/modalManagement.js";
+
+const displaySuccessButton = document.getElementById("displaySuccess");
+
+if (displaySuccessButton) {
+    displaySuccessButton.addEventListener("click", (event) => {
+        return new Promise((resolve, reject) => {
+            setupDB().then((database) => {
+                showSuccess();
+                displayStatistics(database, getSourceLanguageFromSource(getScriptElementSource()));
+                resolve();
+            });
+        });
+    });
+}
 
 export function displayStatistics(database, sourceLanguage = "") {
     let badges = [];

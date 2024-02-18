@@ -1,6 +1,4 @@
 import {getScriptElementSource, getSourceLanguageFromSource} from "../lessonsData.js";
-import { v4 as uuidv4 } from 'uuid';
-
 
 const badgeStoreName = "newBadges"
 const indexedDBVersion = 3;
@@ -228,6 +226,14 @@ function updateLessonStore(lessonStore, data) {
     });
 }
 
+let uniqueIdCounter = 0;
+function generateUniqueId(lessonNumber) {
+    const now = Date.now(); // Obtient le timestamp actuel
+    const randomPart = Math.floor(Math.random() * 10000); // Génère un nombre aléatoire
+    uniqueIdCounter++; // Incrémente le compteur à chaque appel
+    return `Lesson_${lessonNumber}_${now}_${randomPart}_${uniqueIdCounter}`;
+}
+
 function addNewLesson(
     lessonStore,
     lessonNumber,
@@ -236,9 +242,11 @@ function addNewLesson(
     language,
 ) {
     return new Promise((resolve, reject) => {
+        const now = Date.now(); // Obtient le timestamp actuel
+        const randomPart = Math.floor(Math.random() * 10000);
         // Suppose lessonStore.add returns a request object
         let request = lessonStore.add({
-            lessonId: "Lesson_" + lessonNumber + "_" + uuidv4(),
+            lessonId: generateUniqueId(lessonNumber),
             lessonNumber: lessonNumber,
             score: lessonScore,
             timeSpent: timeSpent,

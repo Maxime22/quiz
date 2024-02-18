@@ -2,20 +2,18 @@
 import * as thisModule from './lessonManagement.js';
 
 import {checkAnswer, congratsUser, updateUI} from "./uiHelpers.js";
-import {showSuccess, showWrongAnswerModal} from "./modal/modalManagement.js";
+import {showWrongAnswerModal} from "./modal/modalManagement.js";
 import {getLessonsFromSource, getScriptElementSource, getSourceLanguageFromSource} from "./lessonsData.js";
 import {
     setupDB,
     updateDatabaseAndDisplay,
 } from "./database/indexedDB.js";
-import {displayStatistics} from "./display/displayBadgeAndScore.js";
 import {calculateScoreInPercentage, calculateTimeSpent} from "./calculation.js";
 import {updateAllWordsForCurrentLesson} from "./updateWords.js";
 
 let unknownWordsForCurrentLesson = [];
-let currentWordIndex;
 const changeWordButton = document.getElementById("changeWord");
-const displaySuccessButton = document.getElementById("displaySuccess");
+
 let timerStart = null;
 export let globalState = {};
 initializeLessonManagementGlobalState();
@@ -26,7 +24,8 @@ export function initializeLessonManagementGlobalState(
     totalCountOfWordsForCurrentLesson = 0,
     initialSourceLanguage = getSourceLanguageFromSource(getScriptElementSource()),
     initialLastWordDisplayed = null,
-    initialWordsForCurrentLesson = []
+    initialWordsForCurrentLesson = [],
+    initialCurrentWordIndex = 0
 ) {
     globalState.currentLesson = initialLesson;
     globalState.lessons = initialLessons;
@@ -34,6 +33,7 @@ export function initializeLessonManagementGlobalState(
     globalState.sourceLanguage = initialSourceLanguage;
     globalState.lastWordDisplayed = initialLastWordDisplayed;
     globalState.wordsForCurrentLesson = initialWordsForCurrentLesson;
+    globalState.currentWordIndex = initialCurrentWordIndex
 }
 
 export function handleKeyUp(event) {
@@ -45,7 +45,7 @@ export function handleKeyUp(event) {
         checkAnswer(
             globalState.lessons,
             globalState.wordsForCurrentLesson,
-            currentWordIndex,
+            globalState.currentWordIndex,
             globalState.currentLesson,
             globalState.lastWordDisplayed,
         );
@@ -102,8 +102,7 @@ export function displayNextWord(lessons, wordsForCurrentLesson, currentLesson) {
         thisModule.updateCurrentLesson(lessons, currentLesson);
         return;
     }
-    // TODO
-    const wordObj = getRandomWord(
+    const wordObj = thisModule.getRandomWord(
         wordsForCurrentLesson,
         currentLesson,
         globalState.lastWordDisplayed,
@@ -114,29 +113,19 @@ export function displayNextWord(lessons, wordsForCurrentLesson, currentLesson) {
         currentWordSpan.textContent = wordObj.word;
     }
     globalState.lastWordDisplayed = wordObj;
-    currentWordIndex = wordsForCurrentLesson.indexOf(wordObj);
+    globalState.currentWordIndex = wordsForCurrentLesson.findIndex(word =>
+        word.word === wordObj.word && word.lesson === wordObj.lesson);
+
 }
 
 if (changeWordButton) {
     changeWordButton.addEventListener("click", (event) => {
-        let unknownWord = globalState.wordsForCurrentLesson[currentWordIndex].trad;
+        let unknownWord = globalState.wordsForCurrentLesson[globalState.currentWordIndex].trad;
         if (unknownWordsForCurrentLesson.indexOf(unknownWord) === -1) {
             unknownWordsForCurrentLesson.push(unknownWord);
         }
-        showWrongAnswerModal(globalState.wordsForCurrentLesson, currentWordIndex);
+        showWrongAnswerModal(globalState.wordsForCurrentLesson, globalState.currentWordIndex);
         displayNextWord(globalState.lessons, globalState.wordsForCurrentLesson, globalState.currentLesson);
-    });
-}
-
-if (displaySuccessButton) {
-    displaySuccessButton.addEventListener("click", (event) => {
-        return new Promise((resolve, reject) => {
-            setupDB().then((database) => {
-                showSuccess();
-                displayStatistics(database, globalState.sourceLanguage);
-                resolve();
-            });
-        });
     });
 }
 
