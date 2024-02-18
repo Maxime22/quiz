@@ -25,7 +25,8 @@ export function initializeLessonManagementGlobalState(
     initialSourceLanguage = getSourceLanguageFromSource(getScriptElementSource()),
     initialLastWordDisplayed = null,
     initialWordsForCurrentLesson = [],
-    initialCurrentWordIndex = 0
+    initialCurrentWordIndex = 0,
+    initialUnknownWordsForCurrentLesson = []
 ) {
     globalState.currentLesson = initialLesson;
     globalState.lessons = initialLessons;
@@ -33,7 +34,8 @@ export function initializeLessonManagementGlobalState(
     globalState.sourceLanguage = initialSourceLanguage;
     globalState.lastWordDisplayed = initialLastWordDisplayed;
     globalState.wordsForCurrentLesson = initialWordsForCurrentLesson;
-    globalState.currentWordIndex = initialCurrentWordIndex
+    globalState.currentWordIndex = initialCurrentWordIndex;
+    globalState.unknownWordsForCurrentLesson = initialUnknownWordsForCurrentLesson;
 }
 
 export function handleKeyUp(event) {
@@ -57,7 +59,7 @@ export function updateCurrentLesson(lessons, currentLesson) {
     timerStart = null; // restart for each lesson
     let completionLessonScoreInPercentage = calculateScoreInPercentage(
         globalState.totalCountOfWordsForCurrentLesson,
-        unknownWordsForCurrentLesson,
+        globalState.unknownWordsForCurrentLesson,
     );
     return updateDatabaseAndDisplay(
         completionLessonScoreInPercentage,
@@ -79,11 +81,7 @@ export function updateToNextLesson(lesson = null) {
         globalState.currentLesson++;
     }
     let wordsForCurrentLesson = updateAllWordsForCurrentLesson(globalState.currentLesson, globalState.lessons);
-    if (wordsForCurrentLesson !== undefined) {
-        globalState.totalCountOfWordsForCurrentLesson = wordsForCurrentLesson.length;
-    } else {
-        globalState.totalCountOfWordsForCurrentLesson = 0;
-    }
+    globalState.totalCountOfWordsForCurrentLesson = wordsForCurrentLesson.length;
 
     if (globalState.totalCountOfWordsForCurrentLesson === 0) {
         wordsForCurrentLesson = updateToNextLesson();
@@ -93,7 +91,7 @@ export function updateToNextLesson(lesson = null) {
 }
 
 export function reinitializeUnknownWords() {
-    unknownWordsForCurrentLesson = [];
+    globalState.unknownWordsForCurrentLesson = [];
 }
 
 export function displayNextWord(lessons, wordsForCurrentLesson, currentLesson) {
@@ -120,13 +118,17 @@ export function displayNextWord(lessons, wordsForCurrentLesson, currentLesson) {
 
 if (changeWordButton) {
     changeWordButton.addEventListener("click", (event) => {
-        let unknownWord = globalState.wordsForCurrentLesson[globalState.currentWordIndex].trad;
-        if (unknownWordsForCurrentLesson.indexOf(unknownWord) === -1) {
-            unknownWordsForCurrentLesson.push(unknownWord);
-        }
-        showWrongAnswerModal(globalState.wordsForCurrentLesson, globalState.currentWordIndex);
-        displayNextWord(globalState.lessons, globalState.wordsForCurrentLesson, globalState.currentLesson);
+        changeWord()
     });
+}
+
+export function changeWord(){
+    let unknownWord = globalState.wordsForCurrentLesson[globalState.currentWordIndex].trad;
+    if (globalState.unknownWordsForCurrentLesson.indexOf(unknownWord) === -1) {
+        globalState.unknownWordsForCurrentLesson.push(unknownWord);
+    }
+    showWrongAnswerModal(globalState.wordsForCurrentLesson, globalState.currentWordIndex);
+    thisModule.displayNextWord(globalState.lessons, globalState.wordsForCurrentLesson, globalState.currentLesson);
 }
 
 export function getRandomWord(

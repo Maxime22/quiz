@@ -9,6 +9,7 @@ import * as uiHelpers from "../../../src/shared/js/lessons/uiHelpers.js";
 import * as calculation from "../../../src/shared/js/lessons/calculation.js";
 import * as updateWords from "../../../src/shared/js/lessons/updateWords.js";
 import * as indexedDB from "../../../src/shared/js/lessons/database/indexedDB.js";
+import * as modalManagement from "../../../src/shared/js/lessons/modal/modalManagement.js";
 
 
 // PLUS SIMPLE (VOIR UNIQUEMENT POSSIBLE) à MOCKER SI la fonction appelée est DANS UN AUTRE FICHIER, DE PLUS ILS ONT PAS LA MEME RESPONSABILITE DONC C'EST NORMAL DE PAS LE METTRE DANS LE MEME FICHIER
@@ -30,6 +31,10 @@ jest.mock("../../../src/shared/js/lessons/calculation.js", () => ({
 
 jest.mock("../../../src/shared/js/lessons/updateWords.js", () => ({
     updateAllWordsForCurrentLesson: jest.fn(),
+}));
+
+jest.mock("../../../src/shared/js/lessons/modal/modalManagement.js", () => ({
+    showWrongAnswerModal: jest.fn(),
 }));
 
 
@@ -251,9 +256,87 @@ describe('displayNextWord', () => {
         expect(lessonManagement.globalState.currentWordIndex).toEqual(0);
     });
 
-
-
 });
+
+describe('reinitializeUnknownWords', () => {
+    it('should reinitialize unknown words', () => {
+        // GIVEN
+        lessonManagement.initializeLessonManagementGlobalState(
+            0,
+            [],
+            0,
+            "es_ES",
+            0,
+            [{ word: "arbre", lesson: "1" , trad: "arbol"}],
+            0,
+            ["manzana"]
+        );
+
+        // WHEN
+        lessonManagement.reinitializeUnknownWords();
+
+        // THEN
+        expect(lessonManagement.globalState.unknownWordsForCurrentLesson).toEqual([]);
+    });
+});
+
+describe('changeWord', () => {
+    beforeEach(() => {
+        jest.resetAllMocks();
+        global.unknownWordsForCurrentLesson = [];
+        global.globalState = {
+            wordsForCurrentLesson: [{ word: 'apple', trad: 'pomme' }],
+            currentWordIndex: 0,
+            lessons: [],
+            currentLesson: 1
+        };
+        jest.spyOn(lessonManagement, 'displayNextWord').mockImplementation();
+    });
+
+    it('adds unknown word if not already in the list and calls dependent functions', () => {
+        // GIVEN
+        lessonManagement.initializeLessonManagementGlobalState(
+            0,
+            [],
+            0,
+            "es_ES",
+            0,
+            [{ word: "arbre", lesson: "1" , trad: "arbol"}],
+            0,
+            ["manzana"]
+            );
+
+        // WHEN
+        lessonManagement.changeWord();
+
+        // THEN
+        expect(lessonManagement.globalState.unknownWordsForCurrentLesson).toContain('manzana');
+        expect(lessonManagement.globalState.unknownWordsForCurrentLesson.length).toBe(2);
+        expect(modalManagement.showWrongAnswerModal).toHaveBeenCalledWith(lessonManagement.globalState.wordsForCurrentLesson, lessonManagement.globalState.currentWordIndex);
+        expect(lessonManagement.displayNextWord).toHaveBeenCalledWith(lessonManagement.globalState.lessons, lessonManagement.globalState.wordsForCurrentLesson, lessonManagement.globalState.currentLesson);
+    });
+
+    it('does not add an unknown word if it is already in the list', () => {
+        // GIVEN
+        lessonManagement.initializeLessonManagementGlobalState(
+            0,
+            [],
+            0,
+            "es_ES",
+            0,
+            [{ word: "arbre", lesson: "1" , trad: "arbol"}],
+            0,
+            ["arbol"]
+        );
+
+        // WHEN
+        lessonManagement.changeWord();
+
+        // THEN
+        expect(lessonManagement.globalState.unknownWordsForCurrentLesson.length).toBe(1);
+    });
+});
+
 
 describe('getRandomWord', () => {
     it('returns the only word in the list if there is only one word', () => {
