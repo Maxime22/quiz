@@ -1,4 +1,4 @@
-import {sourceLanguage} from "../lessonsData.js";
+import {getScriptElementSource, getSourceLanguageFromSource} from "../lessonsData.js";
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -269,7 +269,7 @@ export function updateDatabaseAndDisplay(
                     completionLessonScoreInPercentage,
                     currentLesson,
                     timeSpent,
-                    sourceLanguage
+                    getSourceLanguageFromSource(getScriptElementSource())
                 );
                 resolve();
             })

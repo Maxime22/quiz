@@ -1,5 +1,6 @@
 import * as displayBadgeAndScore from "../../../../src/shared/js/lessons/display/displayBadgeAndScore.js";
 import * as indexedDB from "../../../../src/shared/js/lessons/database/indexedDB.js";
+import * as lessonsData from "../../../../src/shared/js/lessons/lessonsData.js";
 
 
 describe('createLessonsMap', () => {
@@ -54,9 +55,16 @@ describe('createBadgeWithScoreForDisplay', () => {
         // GIVEN
         const badgeListElement = document.getElementById("badgeListItems");
         const lessonsMap = new Map([
-            [1, {score: 90, timeSpent: 30, numberOfLessonCompletion: 2}],
+            [1, {score: 90, timeSpent: 10, numberOfLessonCompletion: 2}],
         ]);
         const badge = {badgeName: 'Lesson 1'};
+        lessonsData.getLessonsFromSource = jest.fn().mockReturnValue(
+            [
+            { word: "vite", trad: "hayaku", lesson: "1" },
+            { word: "allons(-y)", trad: "ikimashô", lesson: "1" },
+            { word: "j'ai compris", trad: "wakarimashita", lesson: "1" },
+            { word: "où", trad: "doko", lesson: "1" }
+            ]);
 
         // WHEN
         displayBadgeAndScore.createBadgeWithScoreForDisplay(badge, badgeListElement, lessonsMap);
@@ -67,8 +75,8 @@ describe('createBadgeWithScoreForDisplay', () => {
         expect(listItem.querySelector('.badgeName').textContent).toBe('Lesson 1');
         expect(listItem.querySelector('.lessonScoreDisplayed').textContent).toBe('90%');
         expect(listItem.querySelector('.lessonScoreDisplayed').style.color).toBe('green');
-        expect(listItem.querySelector('.lessonTimeSpentDisplayed').textContent).toBe('30s');
-        expect(listItem.querySelector('.lessonTimeSpentDisplayed').style.color).toBe('green');
+        expect(listItem.querySelector('.lessonTimeSpentDisplayed').textContent).toBe('10s');
+        expect(listItem.querySelector('.lessonTimeSpentDisplayed').style.color).toBe('green'); // 10 < 4*3
         expect(listItem.querySelector('.badgeCount').textContent).toBe('x2');
         expect(listItem.querySelectorAll('.lessonScoreStar').length).toBe(4); // Vérifie la présence de 4 étoiles pour un score de 90
     });

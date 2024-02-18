@@ -1,7 +1,7 @@
 import {getLessonsByLanguage} from "../database/indexedDB.js";
 import {japaneseBadges} from "../../../../languages/japanese/js/japaneseBadges.js";
 import {spanishBadges} from "../../../../languages/spanish/js/spanishBadges.js";
-import {calculateNumberOfWordsForALesson} from "../lessonsData.js";
+import {calculateNumberOfWordsForALesson, getLessonsFromSource} from "../lessonsData.js";
 import * as thisModule from './displayBadgeAndScore.js';
 
 export function displayStatistics(database, sourceLanguage = "") {
@@ -74,7 +74,7 @@ export function createBadgeWithScoreForDisplay(badge, badgeListElement, lessonsM
     let lessonTimeSpent =
         lessonDetails && lessonDetails.timeSpent ? lessonDetails.timeSpent : "??";
 
-    let numberOfWordsInTheLesson = calculateNumberOfWordsForALesson(lessonNumber);
+    let numberOfWordsInTheLesson = calculateNumberOfWordsForALesson(lessonNumber, getLessonsFromSource());
     let starElement = createStarElement(
         lessonScore,
         lessonTimeSpent,

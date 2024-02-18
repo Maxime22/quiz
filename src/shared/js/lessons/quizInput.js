@@ -4,9 +4,10 @@ import {
     displayNextWord,
     reinitializeUnknownWords,
 } from "./lessonManagement.js";
-import {lessons} from "./lessonsData.js";
+import {getLessonsFromSource, getScriptElementSource} from "./lessonsData.js";
 import {populateLessonDropdown, updateLessonInSelectDropdown} from "./dropdownManagement.js";
 
+let lessons = getLessonsFromSource(getScriptElementSource())
 populateLessonDropdown(lessons);
 let wordsForNewLesson = updateToNextLesson(1);
 updateLessonInSelectDropdown(1);

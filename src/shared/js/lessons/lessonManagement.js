@@ -3,7 +3,7 @@ import * as thisModule from './lessonManagement.js';
 
 import {checkAnswer, congratsUser, updateUI} from "./uiHelpers.js";
 import {showSuccess, showWrongAnswerModal} from "./modal/modalManagement.js";
-import {lessons, sourceLanguage} from "./lessonsData.js";
+import {getLessonsFromSource, getScriptElementSource, getSourceLanguageFromSource} from "./lessonsData.js";
 import {
     setupDB,
     updateDatabaseAndDisplay,
@@ -12,7 +12,6 @@ import {displayStatistics} from "./display/displayBadgeAndScore.js";
 import {calculateScoreInPercentage, calculateTimeSpent} from "./calculation.js";
 import {updateAllWordsForCurrentLesson} from "./updateWords.js";
 
-let wordsForCurrentLesson = [];
 let unknownWordsForCurrentLesson = [];
 let currentWordIndex;
 const changeWordButton = document.getElementById("changeWord");
@@ -23,9 +22,9 @@ initializeLessonManagementGlobalState();
 
 export function initializeLessonManagementGlobalState(
     initialLesson = 0,
-    initialLessons = lessons,
+    initialLessons = getLessonsFromSource(getScriptElementSource()),
     totalCountOfWordsForCurrentLesson = 0,
-    initialSourceLanguage = sourceLanguage,
+    initialSourceLanguage = getSourceLanguageFromSource(getScriptElementSource()),
     initialLastWordDisplayed = null,
     initialWordsForCurrentLesson = []
 ) {
