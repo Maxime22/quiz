@@ -1,15 +1,15 @@
-import {sourceLanguage} from "./lessonsData.js";
+import {getScriptElementSource, getSourceLanguageFromSource} from "../lessonsData.js";
 
 const badgeStoreName = "newBadges"
 const indexedDBVersion = 3;
 
 window.onload = function () {
     const firstPromise = setupDB();
-}
+};
 
-export function setupDB() {
+export function setupDB(databaseName = "QuizBDD") {
     return new Promise((resolve, reject) => {
-        let request = indexedDB.open("QuizBDD", indexedDBVersion);
+        let request = indexedDB.open(databaseName, indexedDBVersion);
         // FOR DEV PURPOSE
         // indexedDB.deleteDatabase("QuizBDD")
 
@@ -20,20 +20,30 @@ export function setupDB() {
 
             if (oldDatabaseVersion < 1) {
                 if (!database.objectStoreNames.contains("badges")) {
-                    let badgeStore = database.createObjectStore("badges", {keyPath: "badgeName"});
+                    let badgeStore = database.createObjectStore("badges", {
+                        keyPath: "badgeName",
+                    });
                     badgeStore.createIndex("badgeName", "badgeName", {unique: true});
                 }
             }
             if (oldDatabaseVersion < 2) {
                 if (!database.objectStoreNames.contains("lessons")) {
-                    let lessonStore = database.createObjectStore("lessons", {keyPath: "lessonId"});
-                    lessonStore.createIndex("lessonNumber", "lessonNumber", {unique: true});
+                    let lessonStore = database.createObjectStore("lessons", {
+                        keyPath: "lessonId",
+                    });
+                    lessonStore.createIndex("lessonNumber", "lessonNumber", {
+                        unique: true,
+                    });
                     lessonStore.createIndex("score", "score");
                 }
                 if (database.objectStoreNames.contains("badges")) {
                     if (!database.objectStoreNames.contains("newBadges")) {
-                        let newBadgeStore = database.createObjectStore("newBadges", {keyPath: "badgeId"});
-                        newBadgeStore.createIndex("badgeName", "badgeName", {unique: true});
+                        let newBadgeStore = database.createObjectStore("newBadges", {
+                            keyPath: "badgeId",
+                        });
+                        newBadgeStore.createIndex("badgeName", "badgeName", {
+                            unique: true,
+                        });
 
                         let oldBadgeStore = event.target.transaction.objectStore("badges");
                         oldBadgeStore.openCursor().onsuccess = function (event) {
@@ -101,34 +111,50 @@ export function getLessonsByLanguage(database, language) {
     })
 }
 
-export function getBadgesData(database) {
+// export function getBadgesData(database) {
+//     return new Promise((resolve, reject) => {
+//         let transaction = database.transaction([badgeStoreName], "readonly");
+//         let badgeStore = transaction.objectStore(badgeStoreName);
+//         let getAllBadges = badgeStore.getAll();
+//
+//         getAllBadges.onsuccess = function (e) {
+//             let badges = e.target.result;
+//             // Tri des badges par numéro de leçon
+//             badges.sort((a, b) => {
+//                 let numberA = parseInt(a.badgeName.match(/\d+/)[0]);
+//                 let numberB = parseInt(b.badgeName.match(/\d+/)[0]);
+//                 return numberA - numberB;
+//             });
+//             resolve(badges);
+//         };
+//
+//         getAllBadges.onerror = function () {
+//             reject("Erreur lors de la récupération des badges");
+//         };
+//     });
+// }
+
+export function registerLesson(
+    database,
+    lessonScore,
+    lessonNumber,
+    timeSpent,
+    sourceLanguage
+) {
     return new Promise((resolve, reject) => {
-        let transaction = database.transaction([badgeStoreName], "readonly");
-        let badgeStore = transaction.objectStore(badgeStoreName);
-        let getAllBadges = badgeStore.getAll();
+        let invalidArgs = [];
 
-        getAllBadges.onsuccess = function (e) {
-            let badges = e.target.result;
-            // Tri des badges par numéro de leçon
-            badges.sort((a, b) => {
-                let numberA = parseInt(a.badgeName.match(/\d+/)[0]);
-                let numberB = parseInt(b.badgeName.match(/\d+/)[0]);
-                return numberA - numberB;
-            });
-            resolve(badges);
-        };
+        if (lessonScore === undefined || typeof lessonScore !== 'number' || lessonScore < 0) invalidArgs.push("lessonScore");
+        if (lessonNumber === undefined || typeof lessonNumber !== 'number' || lessonNumber <= 0) invalidArgs.push("lessonNumber");
+        if (timeSpent === undefined || typeof timeSpent !== 'number' || timeSpent < 0) invalidArgs.push("timeSpent");
+        if (sourceLanguage === undefined || typeof sourceLanguage !== 'string' || !sourceLanguage.match(/^[a-z]{2}_[A-Z]{2}$/)) invalidArgs.push("sourceLanguage");
+        if (invalidArgs.length > 0) {
+            throw new Error(`Invalid or missing argument(s): ${invalidArgs.join(", ")}`);
+        }
 
-        getAllBadges.onerror = function () {
-            reject("Erreur lors de la récupération des badges");
-        };
-    });
-}
-
-export function registerLessonScore(database, lessonScore, lessonNumber, timeSpent, sourceLanguage) {
-    return new Promise((resolve, reject) => {
         let transaction = database.transaction(["lessons"], "readwrite");
         let lessonStore = transaction.objectStore("lessons");
-        let lessonIndex = lessonStore.index('lessonNumber');
+        let lessonIndex = lessonStore.index("lessonNumber");
         let getLesson = lessonIndex.get(lessonNumber);
 
         // NECESSITE PROMISE POUR TEST
@@ -136,7 +162,7 @@ export function registerLessonScore(database, lessonScore, lessonNumber, timeSpe
             let data = e.target.result;
 
             if (data && data.language === sourceLanguage) {
-                if(data.numberOfLessonCompletion){
+                if (data.numberOfLessonCompletion) {
                     data.numberOfLessonCompletion++;
                 } else {
                     data.numberOfLessonCompletion = 1;
@@ -144,23 +170,37 @@ export function registerLessonScore(database, lessonScore, lessonNumber, timeSpe
                 if (!data.score || data.score < lessonScore) {
                     data.score = lessonScore;
                 }
-                if (!data.timeSpent || (data.score <= lessonScore) || (data.timeSpent < timeSpent && data.score === lessonScore)) {
+                if (
+                    !data.timeSpent ||
+                    data.score <= lessonScore ||
+                    (data.timeSpent < timeSpent && data.score === lessonScore)
+                ) {
                     data.timeSpent = timeSpent;
                 }
                 if (!data.language) {
                     data.language = sourceLanguage;
                 }
-                updateLessonStore(lessonStore, data).then(() => {
-                    resolve("Lesson updated successfully");
-                }).catch((error) => {
-                    reject("Error in updating lesson : " + error);
-                });
+                updateLessonStore(lessonStore, data)
+                    .then(() => {
+                        resolve("Lesson updated successfully");
+                    })
+                    .catch((error) => {
+                        reject("Error in updating lesson : " + error);
+                    });
             } else {
-                addNewLesson(lessonStore, lessonNumber, lessonScore, timeSpent, sourceLanguage).then(() => {
-                    resolve("Lesson added successfully");
-                }).catch((error) => {
-                    reject("Error in adding lesson : " + error);
-                });
+                addNewLesson(
+                    lessonStore,
+                    lessonNumber,
+                    lessonScore,
+                    timeSpent,
+                    sourceLanguage,
+                )
+                    .then(() => {
+                        resolve("Lesson added successfully");
+                    })
+                    .catch((error) => {
+                        reject("Error in adding lesson : " + error);
+                    });
             }
         };
 
@@ -181,21 +221,37 @@ function updateLessonStore(lessonStore, data) {
         };
 
         request.onerror = function (e) {
-            reject(e.target.errorCode);
+            reject(e.target.error);
         };
     });
 }
 
-function addNewLesson(lessonStore, lessonNumber, lessonScore, timeSpent, language) {
+let uniqueIdCounter = 0;
+function generateUniqueId(lessonNumber) {
+    const now = Date.now(); // Obtient le timestamp actuel
+    const randomPart = Math.floor(Math.random() * 10000); // Génère un nombre aléatoire
+    uniqueIdCounter++; // Incrémente le compteur à chaque appel
+    return `Lesson_${lessonNumber}_${now}_${randomPart}_${uniqueIdCounter}`;
+}
+
+function addNewLesson(
+    lessonStore,
+    lessonNumber,
+    lessonScore,
+    timeSpent,
+    language,
+) {
     return new Promise((resolve, reject) => {
+        const now = Date.now(); // Obtient le timestamp actuel
+        const randomPart = Math.floor(Math.random() * 10000);
         // Suppose lessonStore.add returns a request object
         let request = lessonStore.add({
-            lessonId: "Lesson_" + lessonNumber + "_" + Date.now(),
+            lessonId: generateUniqueId(lessonNumber),
             lessonNumber: lessonNumber,
             score: lessonScore,
             timeSpent: timeSpent,
             language: language,
-            numberOfLessonCompletion : 1
+            numberOfLessonCompletion: 1,
         });
 
         request.onsuccess = function () {
@@ -203,8 +259,30 @@ function addNewLesson(lessonStore, lessonNumber, lessonScore, timeSpent, languag
         };
 
         request.onerror = function (e) {
-            console.log(e.target.error)
-            reject(e.target.errorCode);
+            reject(e.target.error);
         };
+    });
+}
+
+export function updateDatabaseAndDisplay(
+    completionLessonScoreInPercentage,
+    timeSpent,
+    currentLesson,
+) {
+    return new Promise((resolve, reject) => {
+        setupDB()
+            .then((database) => {
+                registerLesson(
+                    database,
+                    completionLessonScoreInPercentage,
+                    currentLesson,
+                    timeSpent,
+                    getSourceLanguageFromSource(getScriptElementSource())
+                );
+                resolve();
+            })
+            .catch((error) => {
+                reject(error);
+            });
     });
 }
