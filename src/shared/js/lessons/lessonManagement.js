@@ -1,7 +1,7 @@
 // Nécessaire pour tester les fonctions qui appellent d'autres fonctions du même fichier : https://stackoverflow.com/questions/45111198/how-to-mock-functions-in-the-same-module-using-jest
 import * as thisModule from './lessonManagement.js';
 
-import {checkAnswer, congratsUser, updateUI} from "./uiHelpers.js";
+import {checkAnswer, congratsUser, updateProgressBar, updateUI} from "./uiHelpers.js";
 import {showWrongAnswerModal} from "./modal/modalManagement.js";
 import {getLessonsFromSource, getScriptElementSource, getSourceLanguageFromSource} from "./lessonsData.js";
 import {
@@ -94,14 +94,14 @@ export function reinitializeUnknownWords() {
     globalState.unknownWordsForCurrentLesson = [];
 }
 
-export function displayNextWord(lessons, wordsForCurrentLesson, currentLesson) {
-    if (wordsForCurrentLesson.length === 0) {
+export function displayNextWord(lessons, wordsToFindForCurrentLesson, currentLesson) {
+    if (wordsToFindForCurrentLesson.length === 0) {
         congratsUser(currentLesson);
         thisModule.updateCurrentLesson(lessons, currentLesson);
         return;
     }
     const wordObj = thisModule.getRandomWord(
-        wordsForCurrentLesson,
+        wordsToFindForCurrentLesson,
         currentLesson,
         globalState.lastWordDisplayed,
     );
@@ -111,9 +111,11 @@ export function displayNextWord(lessons, wordsForCurrentLesson, currentLesson) {
         currentWordSpan.textContent = wordObj.word;
     }
     globalState.lastWordDisplayed = wordObj;
-    globalState.currentWordIndex = wordsForCurrentLesson.findIndex(word =>
+    globalState.currentWordIndex = wordsToFindForCurrentLesson.findIndex(word =>
         word.word === wordObj.word && word.lesson === wordObj.lesson);
 
+    let correctAnswers = globalState.totalCountOfWordsForCurrentLesson - wordsToFindForCurrentLesson.length
+    updateProgressBar(document.getElementById('progressBar') ,correctAnswers, globalState.totalCountOfWordsForCurrentLesson);
 }
 
 if (changeWordButton) {

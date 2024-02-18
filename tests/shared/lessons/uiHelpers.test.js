@@ -7,6 +7,7 @@ import {
 } from "../../../src/shared/js/lessons/lessonManagement";
 import {showLessonCompletedModal} from "../../../src/shared/js/lessons/modal/modalManagement.js";
 import {updateLessonInSelectDropdown} from "../../../src/shared/js/lessons/dropdownManagement.js"
+import * as displayBadgeAndScore from "../../../src/shared/js/lessons/display/displayBadgeAndScore";
 
 jest.mock("../../../src/shared/js/lessons/media/soundManagement.js");
 jest.mock("../../../src/shared/js/lessons/lessonManagement.js");
@@ -15,11 +16,14 @@ jest.mock("../../../src/shared/js/lessons/dropdownManagement.js");
 
 const mockInputElement = {value: ""};
 const mockFeedbackElement = {textContent: ""};
+const mockProgressBarElement = { style: { width: '' } }; // Créez un mock pour progressBar
+
 document.getElementById = jest.fn((id) => {
     if (id === "userLessonInput") return mockInputElement;
     if (id === "feedbackEmoji") return mockFeedbackElement;
-    // Add more mocks as needed
+    if (id === "progressBar") return mockProgressBarElement;
 });
+
 
 describe("checkAnswer", () => {
     const lessons = []; // Mock lessons array
@@ -117,6 +121,11 @@ describe('updateUI', () => {
         reinitializeUnknownWords.mockClear();
         updateLessonInSelectDropdown.mockClear();
         displayNextWord.mockClear();
+        jest.spyOn(uiHelpers, 'resetProgressBar').mockImplementation();
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
     });
 
     it('performs UI updates for the next lesson', () => {
@@ -129,6 +138,7 @@ describe('updateUI', () => {
 
         // THEN
         expect(updateToNextLesson).toHaveBeenCalled();
+        expect(uiHelpers.resetProgressBar).toHaveBeenCalled();
         expect(reinitializeUnknownWords).toHaveBeenCalled();
         expect(updateLessonInSelectDropdown).toHaveBeenCalledWith(currentLesson + 1);
         expect(displayNextWord).toHaveBeenCalledWith(
@@ -140,3 +150,24 @@ describe('updateUI', () => {
     });
 });
 
+describe('updateProgressBar function', () => {
+    it('should update progressBar width to 50% for 5 correct answers out of 10', () => {
+        const progressBar = document.getElementById('progressBar');
+        uiHelpers.updateProgressBar(progressBar,5, 10);
+        expect(progressBar.style.width).toBe('50%');
+    });
+
+    it('should update progressBar width to 100% for 10 correct answers out of 10', () => {
+        const progressBar = document.getElementById('progressBar');
+        uiHelpers.updateProgressBar(progressBar,10, 10);
+        expect(progressBar.style.width).toBe('100%');
+    });
+});
+
+describe('resetProgressBar function', () => {
+    it('should reset progressBar width to 0%', () => {
+        const progressBar = document.getElementById('progressBar');
+        uiHelpers.resetProgressBar(progressBar);
+        expect(progressBar.style.width).toBe('0%');
+    });
+});

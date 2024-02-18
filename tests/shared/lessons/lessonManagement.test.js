@@ -17,7 +17,8 @@ import * as modalManagement from "../../../src/shared/js/lessons/modal/modalMana
 jest.mock("../../../src/shared/js/lessons/uiHelpers.js", () => ({
     checkAnswer: jest.fn(),
     updateUI: jest.fn(),
-    congratsUser: jest.fn()
+    congratsUser: jest.fn(),
+    updateProgressBar: jest.fn()
 }));
 
 jest.mock("../../../src/shared/js/lessons/database/indexedDB.js", () => ({
@@ -218,9 +219,9 @@ describe('displayNextWord', () => {
     it('updates globalState with the last displayed word and its index', () => {
         // GIVEN
         const initialLessons = [{ word: 'apple', lesson: '1' }, { word: 'banana', lesson: '1' }, { word: 'cherry', lesson: '1' }];
-        const wordsForCurrentLesson = [...initialLessons];
+        const wordsForCurrentLesson = [{ word: 'banana', lesson: '1' }, { word: 'cherry', lesson: '1' }];
         const currentLesson = '1';
-        lessonManagement.initializeLessonManagementGlobalState(currentLesson, initialLessons);
+        lessonManagement.initializeLessonManagementGlobalState(currentLesson, initialLessons,3,null,null,[]);
         document.getElementById = jest.fn().mockReturnValue({
             textContent: ''
         });
@@ -232,10 +233,12 @@ describe('displayNextWord', () => {
         expect(document.getElementById).toHaveBeenCalledWith('currentWord');
 
         expect(lessonManagement.globalState.lastWordDisplayed).toEqual({ word: 'cherry', lesson: '1' });
-        expect(lessonManagement.globalState.currentWordIndex).toBe(2);
+        expect(lessonManagement.globalState.currentWordIndex).toBe(1);
 
         const mockedElement = document.getElementById('currentWord');
         expect(mockedElement.textContent).toBe('cherry');
+
+        expect(uiHelpers.updateProgressBar).toHaveBeenCalledWith(expect.any(Object),1,3);
     });
 
     it('exits early if getRandomWord returns no word object', () => {

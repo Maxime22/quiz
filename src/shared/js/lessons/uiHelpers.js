@@ -6,6 +6,7 @@ import {
   updateToNextLesson
 } from "./lessonManagement.js";
 import { updateLessonInSelectDropdown } from "./dropdownManagement.js";
+import * as thisModule from './uiHelpers.js';
 
 export function checkAnswer(
   lessons,
@@ -50,5 +51,15 @@ export function updateUI(lessons, currentLesson) {
   let wordsForNewLesson = updateToNextLesson();
   reinitializeUnknownWords();
   updateLessonInSelectDropdown(currentLesson + 1);
+  thisModule.resetProgressBar(document.getElementById('progressBar'));
   displayNextWord(lessons, wordsForNewLesson, currentLesson);
+}
+
+export function updateProgressBar(progressBar, correctAnswers, totalWords) {
+  const percentage = (correctAnswers / totalWords) * 100;
+  progressBar.style.width = percentage + '%';
+}
+
+export function resetProgressBar(progressBar){
+  progressBar.style.width = 0 + '%';
 }
