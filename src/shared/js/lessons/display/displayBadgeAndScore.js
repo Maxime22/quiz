@@ -1,19 +1,19 @@
 import {getLessonsByLanguage} from "../database/indexedDB.js";
 import {japaneseBadges} from "../../../../languages/japanese/js/japaneseBadges.js";
-import {calculateNumberOfWordsForALesson} from "../lessonsData.js";
 import {spanishBadges} from "../../../../languages/spanish/js/spanishBadges.js";
-
-let badges = [];
+import {calculateNumberOfWordsForALesson} from "../lessonsData.js";
+import * as thisModule from './displayBadgeAndScore.js';
 
 export function displayStatistics(database, sourceLanguage = "") {
+    let badges = [];
+    if (sourceLanguage === "ja_JP") {
+        badges = japaneseBadges
+    }
+    if (sourceLanguage === "es_ES") {
+        badges = spanishBadges
+    }
     getLessonsByLanguage(database, sourceLanguage).then(lessons => {
-        if (sourceLanguage === "ja_JP") {
-            badges = japaneseBadges
-        }
-        if (sourceLanguage === "es_ES") {
-            badges = spanishBadges
-        }
-        displayBadges(createLessonsMap(lessons, sourceLanguage), badges)
+        thisModule.displayBadges(thisModule.createLessonsMap(lessons, sourceLanguage), badges)
     }).catch(error => {
         console.error("Erreur lors de l'affichage des statistiques :", error);
     });

@@ -1,4 +1,6 @@
 import * as displayBadgeAndScore from "../../../../src/shared/js/lessons/display/displayBadgeAndScore.js";
+import * as indexedDB from "../../../../src/shared/js/lessons/database/indexedDB.js";
+
 
 describe('createLessonsMap', () => {
     it('returns an empty map for an empty lessons array', () => {
@@ -14,8 +16,8 @@ describe('createLessonsMap', () => {
     it('adds lessons in the source language to the map', () => {
         // GIVEN
         const lessons = [
-            { lessonNumber: 1, score: 95, timeSpent: 30, language: 'English', numberOfLessonCompletion: 2 },
-            { lessonNumber: 2, score: 88, timeSpent: 25, language: 'French' }
+            {lessonNumber: 1, score: 95, timeSpent: 30, language: 'English', numberOfLessonCompletion: 2},
+            {lessonNumber: 2, score: 88, timeSpent: 25, language: 'French'}
         ];
         const sourceLanguage = 'English';
         // WHEN
@@ -33,7 +35,7 @@ describe('createLessonsMap', () => {
     it('assigns a default value of 1 to numberOfLessonCompletion if not provided', () => {
         // GIVEN
         const lessons = [
-            { lessonNumber: 1, score: 95, timeSpent: 30, language: 'English' }
+            {lessonNumber: 1, score: 95, timeSpent: 30, language: 'English'}
         ];
         const sourceLanguage = 'English';
         // WHEN
@@ -52,9 +54,9 @@ describe('createBadgeWithScoreForDisplay', () => {
         // GIVEN
         const badgeListElement = document.getElementById("badgeListItems");
         const lessonsMap = new Map([
-            [1, { score: 90, timeSpent: 30, numberOfLessonCompletion: 2 }],
+            [1, {score: 90, timeSpent: 30, numberOfLessonCompletion: 2}],
         ]);
-        const badge = { badgeName: 'Lesson 1' };
+        const badge = {badgeName: 'Lesson 1'};
 
         // WHEN
         displayBadgeAndScore.createBadgeWithScoreForDisplay(badge, badgeListElement, lessonsMap);
@@ -110,7 +112,7 @@ describe('createStarElement', () => {
 
     it('reduces star count by one if time spent is more than thrice the number of words in the lesson', () => {
         // WHEN
-        const starElement = displayBadgeAndScore.createStarElement(100, (3*200)+1, 200); // Devrait réduire à 4 étoiles
+        const starElement = displayBadgeAndScore.createStarElement(100, (3 * 200) + 1, 200); // Devrait réduire à 4 étoiles
         // THEN
         expect(starElement.querySelectorAll('.lessonScoreStar').length).toBe(4);
     });
@@ -124,14 +126,14 @@ describe('displayBadges', () => {
     it('should clear existing badges and display only the correct badges for lessons in lessonsMap', () => {
         // GIVEN
         const lessonsMap = new Map([
-            [1, { score: 90, timeSpent: 30, numberOfLessonCompletion: 2 }],
-            [2, { score: 80, timeSpent: 45, numberOfLessonCompletion: 1 }],
+            [1, {score: 90, timeSpent: 30, numberOfLessonCompletion: 2}],
+            [2, {score: 80, timeSpent: 45, numberOfLessonCompletion: 1}],
         ]);
 
         const badges = [
-            { badgeName: 'Lesson 1' },
-            { badgeName: 'Lesson 2' },
-            { badgeName: 'Nonexistent Lesson' },
+            {badgeName: 'Lesson 1'},
+            {badgeName: 'Lesson 2'},
+            {badgeName: 'Nonexistent Lesson'},
         ];
         // WHEN
         displayBadgeAndScore.displayBadges(lessonsMap, badges);
@@ -142,5 +144,30 @@ describe('displayBadges', () => {
         expect(badgeListElement.innerHTML).toContain('Lesson 1');
         expect(badgeListElement.innerHTML).toContain('Lesson 2');
         expect(badgeListElement.innerHTML).not.toContain('Nonexistent Lesson');
+    });
+});
+
+
+describe('displayStatistics tests', () => {
+    let databaseMock;
+
+    beforeEach(() => {
+        jest.resetAllMocks();
+        databaseMock = {};
+        indexedDB.getLessonsByLanguage = jest.fn().mockResolvedValue([]);
+        jest.spyOn(displayBadgeAndScore, 'displayBadges').mockImplementation();
+        jest.spyOn(displayBadgeAndScore, 'createLessonsMap').mockImplementation();
+    });
+
+    const testCases = [
+        { language: "ja_JP", expectedLanguage: "ja_JP" },
+        { language: "es_ES", expectedLanguage: "es_ES" }
+    ];
+
+    test.each(testCases)('displayBadges is called with correct arguments for $language', async ({ language, expectedLanguage }) => {
+        await displayBadgeAndScore.displayStatistics(databaseMock, language);
+
+        expect(indexedDB.getLessonsByLanguage).toHaveBeenCalledWith(databaseMock, expectedLanguage);
+        expect(displayBadgeAndScore.displayBadges).toHaveBeenCalled();
     });
 });
