@@ -130,7 +130,7 @@ describe('updateUI', () => {
         // THEN
         expect(updateToNextLesson).toHaveBeenCalled();
         expect(reinitializeUnknownWords).toHaveBeenCalled();
-        expect(updateLessonInSelectDropdown).toHaveBeenCalledWith(currentLesson);
+        expect(updateLessonInSelectDropdown).toHaveBeenCalledWith(currentLesson + 1);
         expect(displayNextWord).toHaveBeenCalledWith(
             lessons, [
                 {word: 'TestWord', lesson: 1},

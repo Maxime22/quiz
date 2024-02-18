@@ -49,6 +49,6 @@ export function congratsUser(currentLesson) {
 export function updateUI(lessons, currentLesson) {
   let wordsForNewLesson = updateToNextLesson();
   reinitializeUnknownWords();
-  updateLessonInSelectDropdown(currentLesson);
+  updateLessonInSelectDropdown(currentLesson + 1);
   displayNextWord(lessons, wordsForNewLesson, currentLesson);
 }
