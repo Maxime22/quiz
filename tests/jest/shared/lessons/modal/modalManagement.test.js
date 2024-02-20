@@ -1,4 +1,4 @@
-import * as modalManagement from "../../../../src/shared/js/lessons/modal/modalManagement.js";
+import * as modalManagement from "../../../../../src/shared/js/lessons/modal/modalManagement.js";
 
 // Simulez le DOM nécessaire pour vos tests
 beforeEach(() => {

@@ -4,7 +4,7 @@ import {
     registerLesson,
     setupDB,
     updateDatabaseAndDisplay
-} from "../../../../src/shared/js/lessons/database/indexedDB";
+} from "../../../../../src/shared/js/lessons/database/indexedDB";
 import "fake-indexeddb/auto";
 
 if (typeof structuredClone === "undefined") {

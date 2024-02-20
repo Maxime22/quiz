@@ -4,37 +4,37 @@
 //   handleKeyUp,
 //   updateToNextLesson,
 // } from "../../../src/shared/js/lessons/lessonManagement.js";
-import * as lessonManagement from "../../../src/shared/js/lessons/lessonManagement.js";
-import * as uiHelpers from "../../../src/shared/js/lessons/uiHelpers.js";
-import * as calculation from "../../../src/shared/js/lessons/calculation.js";
-import * as updateWords from "../../../src/shared/js/lessons/updateWords.js";
-import * as indexedDB from "../../../src/shared/js/lessons/database/indexedDB.js";
-import * as modalManagement from "../../../src/shared/js/lessons/modal/modalManagement.js";
+import * as lessonManagement from "../../../../src/shared/js/lessons/lessonManagement.js";
+import * as uiHelpers from "../../../../src/shared/js/lessons/uiHelpers.js";
+import * as calculation from "../../../../src/shared/js/lessons/calculation.js";
+import * as updateWords from "../../../../src/shared/js/lessons/updateWords.js";
+import * as indexedDB from "../../../../src/shared/js/lessons/database/indexedDB.js";
+import * as modalManagement from "../../../../src/shared/js/lessons/modal/modalManagement.js";
 
 
 // PLUS SIMPLE (VOIR UNIQUEMENT POSSIBLE) à MOCKER SI la fonction appelée est DANS UN AUTRE FICHIER, DE PLUS ILS ONT PAS LA MEME RESPONSABILITE DONC C'EST NORMAL DE PAS LE METTRE DANS LE MEME FICHIER
 // IL Y A PEUT ETRE MOYEN DE LE FAIRE MAIS CE SERAIT AVEC THIS OU AUTRE ET C'EST PLUS COMPLIQUE
-jest.mock("../../../src/shared/js/lessons/uiHelpers.js", () => ({
+jest.mock("../../../../src/shared/js/lessons/uiHelpers.js", () => ({
     checkAnswer: jest.fn(),
     updateUI: jest.fn(),
     congratsUser: jest.fn(),
     updateProgressBar: jest.fn()
 }));
 
-jest.mock("../../../src/shared/js/lessons/database/indexedDB.js", () => ({
+jest.mock("../../../../src/shared/js/lessons/database/indexedDB.js", () => ({
     updateDatabaseAndDisplay: jest.fn(),
 }));
 
-jest.mock("../../../src/shared/js/lessons/calculation.js", () => ({
+jest.mock("../../../../src/shared/js/lessons/calculation.js", () => ({
     calculateTimeSpent: jest.fn(),
     calculateScoreInPercentage: jest.fn(),
 }));
 
-jest.mock("../../../src/shared/js/lessons/updateWords.js", () => ({
+jest.mock("../../../../src/shared/js/lessons/updateWords.js", () => ({
     updateAllWordsForCurrentLesson: jest.fn(),
 }));
 
-jest.mock("../../../src/shared/js/lessons/modal/modalManagement.js", () => ({
+jest.mock("../../../../src/shared/js/lessons/modal/modalManagement.js", () => ({
     showWrongAnswerModal: jest.fn(),
 }));
 
@@ -48,7 +48,7 @@ describe("calculateTimeSpent", () => {
         // GIVEN
         // Get the actual implementation of calculateTimeSpent
         const realCalculateTimeSpent = jest.requireActual(
-            "../../../src/shared/js/lessons/calculation.js",
+            "../../../../src/shared/js/lessons/calculation.js",
         ).calculateTimeSpent;
 
         // Mock Date.now() to return a specific timestamp

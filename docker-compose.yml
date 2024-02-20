@@ -5,3 +5,14 @@ services:
     working_dir: /usr/src/app
     volumes:
       - ./:/usr/src/app
+    command: npm start
+    ports:
+      - "80:80"
+  cypress:
+    image: cypress/included:latest
+    depends_on:
+      - app
+    volumes:
+      - ./:/e2e
+    working_dir: /e2e
+    entrypoint: [ "cypress", "run" ]

@@ -1,4 +1,4 @@
-import * as soundManagement from "../../../../src/shared/js/lessons/media/soundManagement.js";
+import * as soundManagement from "../../../../../src/shared/js/lessons/media/soundManagement.js";
 
 describe('playSound', () => {
     beforeEach(() => {

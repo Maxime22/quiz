@@ -1,4 +1,4 @@
-import * as calculation from "../../../src/shared/js/lessons/calculation.js";
+import * as calculation from "../../../../src/shared/js/lessons/calculation.js";
 
 describe('calculateTimeSpent', () => {
     beforeAll(() => {

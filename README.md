@@ -1,6 +1,6 @@
 # Quiz
 
-Quiz pour apprendre les langues =)
+Quiz pour apprendre des choses =)
 
 ## Installation basique
 
@@ -25,4 +25,5 @@ Suivez ces étapes pour installer et configurer le projet sur votre machine loca
 
 **Exécuter les tests :**
 
-- `make test`
+- `make jest`
+- `make cypress`

@@ -19,6 +19,6 @@ jobs:
       - name: Install dependencies
         run: make install
 
-      - name: Run tests
-        run: make test
+      - name: Run jest tests
+        run: make jest
 

@@ -1,12 +1,20 @@
 # Construire l'image Docker et démarrer les services avec docker-compose
 build:
-	docker compose up --build -d
+	docker-compose build
 
 install:
 	docker compose run --rm app npm install
 
-test:
-	docker compose run --rm app npm test
+jest:
+	docker compose run --rm app npx jest
+
+test: jest cypress
+
+start:
+	docker compose up -d app
+
+cypress: start
+	docker compose run --rm cypress
 
 .PHONY: coverage
 coverage:

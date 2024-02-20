@@ -1,12 +1,12 @@
-import * as lessonsData from "../../../src/shared/js/lessons/lessonsData.js";
+import * as lessonsData from "../../../../src/shared/js/lessons/lessonsData.js";
 
-jest.mock("../../../src/languages/japanese/js/japaneseLesson.js", () => ({
+jest.mock("../../../../src/languages/japanese/js/japaneseLesson.js", () => ({
     japaneseWordsTradsAndLessons: [
         { word: "こんにちは", trad: "hello", lesson: "1" }
     ],
 }));
 
-jest.mock("../../../src/languages/spanish/js/spanishLesson.js", () => ({
+jest.mock("../../../../src/languages/spanish/js/spanishLesson.js", () => ({
     spanishWordsTradsAndLessons: [
         { word: "hola", trad: "hello", lesson: "1" }
     ],
@@ -14,7 +14,7 @@ jest.mock("../../../src/languages/spanish/js/spanishLesson.js", () => ({
 
 describe('getScriptElementSource', () => {
     it('returns the data-html-source attribute of the script element', () => {
-        document.body.innerHTML = `<script src="../../../src/shared/js/lessons/quizInput.js" data-html-source="japanLessons"></script>`;
+        document.body.innerHTML = `<script src="../../../../src/shared/js/lessons/quizInput.js" data-html-source="japanLessons"></script>`;
 
         expect(lessonsData.getScriptElementSource()).toBe("japanLessons");
     });

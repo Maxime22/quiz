@@ -1,4 +1,4 @@
-import * as updateWords from "../../../src/shared/js/lessons/updateWords.js";
+import * as updateWords from "../../../../src/shared/js/lessons/updateWords.js";
 
 describe('updateAllWordsForCurrentLesson', () => {
 

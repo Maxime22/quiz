@@ -1,18 +1,18 @@
-import * as uiHelpers from "../../../src/shared/js/lessons/uiHelpers";
-import {playSound} from "../../../src/shared/js/lessons/media/soundManagement";
+import * as uiHelpers from "../../../../src/shared/js/lessons/uiHelpers";
+import {playSound} from "../../../../src/shared/js/lessons/media/soundManagement";
 import {
     displayNextWord,
     updateToNextLesson,
     reinitializeUnknownWords
-} from "../../../src/shared/js/lessons/lessonManagement";
-import {showLessonCompletedModal} from "../../../src/shared/js/lessons/modal/modalManagement.js";
-import {updateLessonInSelectDropdown} from "../../../src/shared/js/lessons/dropdownManagement.js"
-import * as displayBadgeAndScore from "../../../src/shared/js/lessons/display/displayBadgeAndScore";
+} from "../../../../src/shared/js/lessons/lessonManagement";
+import {showLessonCompletedModal} from "../../../../src/shared/js/lessons/modal/modalManagement.js";
+import {updateLessonInSelectDropdown} from "../../../../src/shared/js/lessons/dropdownManagement.js"
+import * as displayBadgeAndScore from "../../../../src/shared/js/lessons/display/displayBadgeAndScore";
 
-jest.mock("../../../src/shared/js/lessons/media/soundManagement.js");
-jest.mock("../../../src/shared/js/lessons/lessonManagement.js");
-jest.mock("../../../src/shared/js/lessons/modal/modalManagement.js");
-jest.mock("../../../src/shared/js/lessons/dropdownManagement.js");
+jest.mock("../../../../src/shared/js/lessons/media/soundManagement.js");
+jest.mock("../../../../src/shared/js/lessons/lessonManagement.js");
+jest.mock("../../../../src/shared/js/lessons/modal/modalManagement.js");
+jest.mock("../../../../src/shared/js/lessons/dropdownManagement.js");
 
 const mockInputElement = {value: ""};
 const mockFeedbackElement = {textContent: ""};

@@ -1,6 +1,6 @@
-import * as displayBadgeAndScore from "../../../../src/shared/js/lessons/display/displayBadgeAndScore.js";
-import * as indexedDB from "../../../../src/shared/js/lessons/database/indexedDB.js";
-import * as lessonsData from "../../../../src/shared/js/lessons/lessonsData.js";
+import * as displayBadgeAndScore from "../../../../../src/shared/js/lessons/display/displayBadgeAndScore.js";
+import * as indexedDB from "../../../../../src/shared/js/lessons/database/indexedDB.js";
+import * as lessonsData from "../../../../../src/shared/js/lessons/lessonsData.js";
 
 
 describe('createLessonsMap', () => {

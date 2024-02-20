@@ -1,4 +1,4 @@
-import * as dropdownManagement from "../../../src/shared/js/lessons/dropdownManagement.js";
+import * as dropdownManagement from "../../../../src/shared/js/lessons/dropdownManagement.js";
 
 describe('updateLessonInSelectDropdown', () => {
     it('should update the lesson in the select dropdown', () => {
