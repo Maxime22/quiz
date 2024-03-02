@@ -17,8 +17,8 @@ document
     .getElementById("userLessonInput")
     .addEventListener("keyup", handleKeyUp);
 document.getElementById("lessonSelect").addEventListener("change", (event) => {
-    let wordsForNewLesson = updateToNextLesson(event.target.value);
+    let wordsForNewLesson = updateToNextLesson(parseInt(event.target.value));
     reinitializeUnknownWords();
     updateLessonInSelectDropdown(event.target.value);
-    displayNextWord(lessons, wordsForNewLesson, event.target.value);
+    displayNextWord(lessons, wordsForNewLesson, parseInt(event.target.value));
 });

@@ -185,6 +185,13 @@ describe('updateToNextLesson', () => {
         expect(updateWords.updateAllWordsForCurrentLesson).toHaveBeenCalledTimes(2);
         expect(result).toEqual([{word: 'Mot1', lesson: 2}]);
     });
+
+    it('should throw an Error if lesson passed to the function is not a number', () => {
+        // THEN
+        expect(() => {
+            lessonManagement.updateToNextLesson('not_an_integer');
+        }).toThrowError('Lesson passed to updateToNextLesson is not a number');
+    });
 });
 
 describe('displayNextWord', () => {
@@ -220,7 +227,7 @@ describe('displayNextWord', () => {
         // GIVEN
         const initialLessons = [{ word: 'apple', lesson: '1' }, { word: 'banana', lesson: '1' }, { word: 'cherry', lesson: '1' }];
         const wordsForCurrentLesson = [{ word: 'banana', lesson: '1' }, { word: 'cherry', lesson: '1' }];
-        const currentLesson = '1';
+        const currentLesson = 1;
         lessonManagement.initializeLessonManagementGlobalState(currentLesson, initialLessons,3,null,null,[]);
         document.getElementById = jest.fn().mockReturnValue({
             textContent: ''
@@ -245,7 +252,7 @@ describe('displayNextWord', () => {
         // GIVEN
         const initialLessons = [{ word: 'apple', lesson: '1' }, { word: 'banana', lesson: '1' }, { word: 'cherry', lesson: '1' }];
         const wordsForCurrentLesson = [...initialLessons];
-        const currentLesson = '1';
+        const currentLesson = 1;
         lessonManagement.initializeLessonManagementGlobalState(currentLesson, initialLessons);
         document.getElementById = jest.fn().mockReturnValue({ textContent: '' });
         jest.spyOn(lessonManagement, 'getRandomWord').mockReturnValueOnce(undefined);
@@ -257,6 +264,13 @@ describe('displayNextWord', () => {
         expect(document.getElementById).not.toHaveBeenCalled();
         expect(lessonManagement.globalState.lastWordDisplayed).toBeNull();
         expect(lessonManagement.globalState.currentWordIndex).toEqual(0);
+    });
+
+    it('should throw an Error if lesson passed to the function is not a number', () => {
+        // THEN
+        expect(() => {
+            lessonManagement.displayNextWord('not_an_integer');
+        }).toThrowError('Lesson passed to displayNextWord is not a number');
     });
 
 });

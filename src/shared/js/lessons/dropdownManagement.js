@@ -1,3 +1,5 @@
+import {globalState} from "./lessonManagement";
+
 export function updateLessonInSelectDropdown(lesson) {
     const selectElement = document.getElementById("lessonSelect");
     if (selectElement) {

@@ -76,7 +76,11 @@ export function updateCurrentLesson(lessons, currentLesson) {
 
 export function updateToNextLesson(lesson = null) {
     if (lesson !== null) {
-        globalState.currentLesson = lesson;
+        if (Number.isInteger(lesson)) {
+            globalState.currentLesson = parseInt(lesson);
+        } else {
+            throw new Error("Lesson passed to updateToNextLesson is not a number")
+        }
     } else {
         globalState.currentLesson++;
     }
@@ -95,6 +99,9 @@ export function reinitializeUnknownWords() {
 }
 
 export function displayNextWord(lessons, wordsToFindForCurrentLesson, currentLesson) {
+    if (!Number.isInteger(currentLesson)) {
+        throw new Error("Lesson passed to displayNextWord is not a number")
+    }
     if (wordsToFindForCurrentLesson.length === 0) {
         congratsUser(currentLesson);
         thisModule.updateCurrentLesson(lessons, currentLesson);
@@ -115,7 +122,7 @@ export function displayNextWord(lessons, wordsToFindForCurrentLesson, currentLes
         word.word === wordObj.word && word.lesson === wordObj.lesson);
 
     let correctAnswers = globalState.totalCountOfWordsForCurrentLesson - wordsToFindForCurrentLesson.length
-    updateProgressBar(document.getElementById('progressBar') ,correctAnswers, globalState.totalCountOfWordsForCurrentLesson);
+    updateProgressBar(document.getElementById('progressBar'), correctAnswers, globalState.totalCountOfWordsForCurrentLesson);
 }
 
 if (changeWordButton) {
@@ -124,7 +131,7 @@ if (changeWordButton) {
     });
 }
 
-export function changeWord(){
+export function changeWord() {
     let unknownWord = globalState.wordsForCurrentLesson[globalState.currentWordIndex].trad;
     if (globalState.unknownWordsForCurrentLesson.indexOf(unknownWord) === -1) {
         globalState.unknownWordsForCurrentLesson.push(unknownWord);

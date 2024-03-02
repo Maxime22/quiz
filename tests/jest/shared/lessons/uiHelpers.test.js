@@ -8,6 +8,7 @@ import {
 import {showLessonCompletedModal} from "../../../../src/shared/js/lessons/modal/modalManagement.js";
 import {updateLessonInSelectDropdown} from "../../../../src/shared/js/lessons/dropdownManagement.js"
 import * as displayBadgeAndScore from "../../../../src/shared/js/lessons/display/displayBadgeAndScore";
+import * as lessonManagement from "../../../../src/shared/js/lessons/lessonManagement";
 
 jest.mock("../../../../src/shared/js/lessons/media/soundManagement.js");
 jest.mock("../../../../src/shared/js/lessons/lessonManagement.js");
@@ -16,7 +17,7 @@ jest.mock("../../../../src/shared/js/lessons/dropdownManagement.js");
 
 const mockInputElement = {value: ""};
 const mockFeedbackElement = {textContent: ""};
-const mockProgressBarElement = { style: { width: '' } }; // Créez un mock pour progressBar
+const mockProgressBarElement = {style: {width: ''}}; // Créez un mock pour progressBar
 
 document.getElementById = jest.fn((id) => {
     if (id === "userLessonInput") return mockInputElement;
@@ -148,18 +149,25 @@ describe('updateUI', () => {
             ],
             currentLesson);
     });
+
+    it('should throw an Error if lesson passed to the function is not a number', () => {
+        // THEN
+        expect(() => {
+            uiHelpers.updateUI('not_an_integer');
+        }).toThrowError('Lesson passed to updateUI is not a number');
+    });
 });
 
 describe('updateProgressBar function', () => {
     it('should update progressBar width to 50% for 5 correct answers out of 10', () => {
         const progressBar = document.getElementById('progressBar');
-        uiHelpers.updateProgressBar(progressBar,5, 10);
+        uiHelpers.updateProgressBar(progressBar, 5, 10);
         expect(progressBar.style.width).toBe('50%');
     });
 
     it('should update progressBar width to 100% for 10 correct answers out of 10', () => {
         const progressBar = document.getElementById('progressBar');
-        uiHelpers.updateProgressBar(progressBar,10, 10);
+        uiHelpers.updateProgressBar(progressBar, 10, 10);
         expect(progressBar.style.width).toBe('100%');
     });
 });
