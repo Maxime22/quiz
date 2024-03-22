@@ -1,4 +1,3 @@
-import {getLessonsByLanguage, setupDB} from "../database/indexedDB.js";
 import {japaneseBadges} from "../../../../languages/japanese/js/japaneseBadges.js";
 import {spanishBadges} from "../../../../languages/spanish/js/spanishBadges.js";
 import {
@@ -9,22 +8,21 @@ import {
 } from "../lessonsData.js";
 import * as thisModule from './displayBadgeAndScore.js';
 import {showSuccess} from "../modal/modalManagement.js";
+import {getLessons} from "../database/getLessons.js";
 
 const displaySuccessButton = document.getElementById("displaySuccess");
 
 if (displaySuccessButton) {
     displaySuccessButton.addEventListener("click", (event) => {
-        return new Promise((resolve, reject) => {
-            setupDB().then((database) => {
-                showSuccess();
-                displayStatistics(database, getSourceLanguageFromSource(getScriptElementSource()));
-                resolve();
-            });
+        return new Promise((resolve) => {
+            showSuccess();
+            displayStatistics(getSourceLanguageFromSource(getScriptElementSource()));
+            resolve();
         });
     });
 }
 
-export function displayStatistics(database, sourceLanguage = "") {
+export function displayStatistics(sourceLanguage = "") {
     let badges = [];
     if (sourceLanguage === "ja_JP") {
         badges = japaneseBadges
@@ -32,7 +30,7 @@ export function displayStatistics(database, sourceLanguage = "") {
     if (sourceLanguage === "es_ES") {
         badges = spanishBadges
     }
-    getLessonsByLanguage(database, sourceLanguage).then(lessons => {
+    getLessons(sourceLanguage).then(lessons => {
         thisModule.displayBadges(thisModule.createLessonsMap(lessons, sourceLanguage), badges)
     }).catch(error => {
         console.error("Erreur lors de l'affichage des statistiques :", error);
@@ -43,10 +41,10 @@ export function createLessonsMap(lessons, sourceLanguage) {
     const lessonsMap = new Map();
     lessons.forEach(lesson => {
         if (lesson.language && lesson.language === sourceLanguage) {
-            lessonsMap.set(lesson.lessonNumber,
+            lessonsMap.set(lesson.lesson_id,
                 {
                     score: lesson.score,
-                    timeSpent: lesson.timeSpent,
+                    timeSpent: lesson.completion_time,
                     language: lesson.language,
                     numberOfLessonCompletion: lesson.numberOfLessonCompletion ? lesson.numberOfLessonCompletion : 1,
                 });
@@ -57,7 +55,6 @@ export function createLessonsMap(lessons, sourceLanguage) {
 
 export function displayBadges(lessonsMap, badges) {
     let badgeListElement = document.getElementById("badgeListItems");
-
     if (badgeListElement) {
         badgeListElement.innerHTML = "";
         badges.forEach((badge) => {

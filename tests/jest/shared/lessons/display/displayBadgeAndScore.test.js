@@ -1,6 +1,6 @@
 import * as displayBadgeAndScore from "../../../../../src/shared/js/lessons/display/displayBadgeAndScore.js";
-import * as indexedDB from "../../../../../src/shared/js/lessons/database/indexedDB.js";
 import * as lessonsData from "../../../../../src/shared/js/lessons/lessonsData.js";
+import * as getLessons from "../../../../../src/shared/js/lessons/database/getLessons.js"
 
 
 describe('createLessonsMap', () => {
@@ -17,8 +17,8 @@ describe('createLessonsMap', () => {
     it('adds lessons in the source language to the map', () => {
         // GIVEN
         const lessons = [
-            {lessonNumber: 1, score: 95, timeSpent: 30, language: 'English', numberOfLessonCompletion: 2},
-            {lessonNumber: 2, score: 88, timeSpent: 25, language: 'French'}
+            {lesson_id: 1, score: 95, completion_time: 30, language: 'English', numberOfLessonCompletion: 2},
+            {lesson_id: 2, score: 88, completion_time: 25, language: 'French'}
         ];
         const sourceLanguage = 'English';
         // WHEN
@@ -36,7 +36,7 @@ describe('createLessonsMap', () => {
     it('assigns a default value of 1 to numberOfLessonCompletion if not provided', () => {
         // GIVEN
         const lessons = [
-            {lessonNumber: 1, score: 95, timeSpent: 30, language: 'English'}
+            {lesson_id: 1, score: 95, completion_time: 30, language: 'English'}
         ];
         const sourceLanguage = 'English';
         // WHEN
@@ -157,12 +157,10 @@ describe('displayBadges', () => {
 
 
 describe('displayStatistics tests', () => {
-    let databaseMock;
 
     beforeEach(() => {
         jest.resetAllMocks();
-        databaseMock = {};
-        indexedDB.getLessonsByLanguage = jest.fn().mockResolvedValue([]);
+        getLessons.getLessons = jest.fn().mockResolvedValue([]);
         jest.spyOn(displayBadgeAndScore, 'displayBadges').mockImplementation();
         jest.spyOn(displayBadgeAndScore, 'createLessonsMap').mockImplementation();
     });
@@ -173,9 +171,9 @@ describe('displayStatistics tests', () => {
     ];
 
     test.each(testCases)('displayBadges is called with correct arguments for $language', async ({ language, expectedLanguage }) => {
-        await displayBadgeAndScore.displayStatistics(databaseMock, language);
+        await displayBadgeAndScore.displayStatistics(language);
 
-        expect(indexedDB.getLessonsByLanguage).toHaveBeenCalledWith(databaseMock, expectedLanguage);
+        expect(getLessons.getLessons).toHaveBeenCalledWith(expectedLanguage);
         expect(displayBadgeAndScore.displayBadges).toHaveBeenCalled();
     });
 });

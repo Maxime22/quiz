@@ -1,15 +1,10 @@
-//https://stackoverflow.com/questions/45111198/how-to-mock-functions-in-the-same-module-using-jest
-//
-// import {
-//   handleKeyUp,
-//   updateToNextLesson,
-// } from "../../../src/shared/js/lessons/lessonManagement.js";
 import * as lessonManagement from "../../../../src/shared/js/lessons/lessonManagement.js";
 import * as uiHelpers from "../../../../src/shared/js/lessons/uiHelpers.js";
 import * as calculation from "../../../../src/shared/js/lessons/calculation.js";
 import * as updateWords from "../../../../src/shared/js/lessons/updateWords.js";
 import * as indexedDB from "../../../../src/shared/js/lessons/database/indexedDB.js";
 import * as modalManagement from "../../../../src/shared/js/lessons/modal/modalManagement.js";
+import * as submitScore from "../../../../src/shared/js/lessons/database/submitScore.js";
 
 
 // PLUS SIMPLE (VOIR UNIQUEMENT POSSIBLE) à MOCKER SI la fonction appelée est DANS UN AUTRE FICHIER, DE PLUS ILS ONT PAS LA MEME RESPONSABILITE DONC C'EST NORMAL DE PAS LE METTRE DANS LE MEME FICHIER
@@ -23,6 +18,10 @@ jest.mock("../../../../src/shared/js/lessons/uiHelpers.js", () => ({
 
 jest.mock("../../../../src/shared/js/lessons/database/indexedDB.js", () => ({
     updateDatabaseAndDisplay: jest.fn(),
+}));
+
+jest.mock("../../../../src/shared/js/lessons/database/submitScore.js", () => ({
+    submitScore: jest.fn(),
 }));
 
 jest.mock("../../../../src/shared/js/lessons/calculation.js", () => ({
@@ -95,16 +94,14 @@ describe("updateCurrentLesson", () => {
         let currentLesson = 1;
         calculation.calculateTimeSpent.mockReturnValue(120);
         calculation.calculateScoreInPercentage.mockReturnValue(80);
-        indexedDB.updateDatabaseAndDisplay.mockResolvedValue();
+        submitScore.submitScore.mockResolvedValue();
 
         // WHEN
         await lessonManagement.updateCurrentLesson(lessons, currentLesson);
 
         // THEN
-        expect(indexedDB.updateDatabaseAndDisplay).toHaveBeenCalledWith(
-            80,
-            120,
-            currentLesson,
+        expect(submitScore.submitScore).toHaveBeenCalledWith(
+            {"completion_time": 120, "language": "", "lesson_id": currentLesson, "score": 80}
         );
         expect(uiHelpers.updateUI).toHaveBeenCalledWith(lessons, currentLesson);
     });

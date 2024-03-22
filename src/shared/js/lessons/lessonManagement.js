@@ -4,12 +4,9 @@ import * as thisModule from './lessonManagement.js';
 import {checkAnswer, congratsUser, updateProgressBar, updateUI} from "./uiHelpers.js";
 import {showWrongAnswerModal} from "./modal/modalManagement.js";
 import {getLessonsFromSource, getScriptElementSource, getSourceLanguageFromSource} from "./lessonsData.js";
-import {
-    setupDB,
-    updateDatabaseAndDisplay,
-} from "./database/indexedDB.js";
 import {calculateScoreInPercentage, calculateTimeSpent} from "./calculation.js";
 import {updateAllWordsForCurrentLesson} from "./updateWords.js";
+import {submitScore} from "./database/submitScore.js";
 
 let unknownWordsForCurrentLesson = [];
 const changeWordButton = document.getElementById("changeWord");
@@ -61,11 +58,15 @@ export function updateCurrentLesson(lessons, currentLesson) {
         globalState.totalCountOfWordsForCurrentLesson,
         globalState.unknownWordsForCurrentLesson,
     );
-    return updateDatabaseAndDisplay(
-        completionLessonScoreInPercentage,
-        timeSpent,
-        currentLesson,
-    )
+
+    const scoreData = {
+        lesson_id: currentLesson,
+        language: getSourceLanguageFromSource(getScriptElementSource()),
+        score: completionLessonScoreInPercentage,
+        completion_time: timeSpent
+    };
+
+    return submitScore(scoreData)
         .then(() => {
             updateUI(lessons, currentLesson);
         })
