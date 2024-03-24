@@ -9,6 +9,11 @@ describe('Test de l\'affichage de la modale de succès', () => {
         // Cliquer sur le bouton displaySuccess
         cy.get('#displaySuccess').click();
 
+        cy.intercept('POST', '/.netlify/functions/supabase-get-user-lessons', {
+            statusCode: 200,
+            body: { lessons: [] },
+        }).as('getLessons');
+
         // Vérifier que la modal est maintenant affichée (display: block)
         cy.get('#myBadgeModal').should('have.css', 'display', 'block');
     });

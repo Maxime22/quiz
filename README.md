@@ -27,3 +27,12 @@ Suivez ces étapes pour installer et configurer le projet sur votre machine loca
 
 - `make jest`
 - `make cypress`
+
+**Utilisation de Netlify en local**
+- Installer node/npm sur votre machine si vous ne l'avez pas
+- Installer netlify CLI (`npm install netlify-cli -g`)
+- Linker à un projet netlify existant : à la racine du projet `netlify link`
+- Rajouter dans un .env les valeurs qui sont également dans votre compte Netlify pour pouvoir tester en local
+- Lancer le serveur `netlify dev`
+
+Le push sur main déploiera la version automatiquement sur Netlify et donc en prod
